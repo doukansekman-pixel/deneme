@@ -1,7 +1,7 @@
 // This site's OWN admin auth — a single password gate for the menu admin
 // panel. Not Higgsfield/fnf auth (see references/auth.md's distinction: this
 // is in-app auth for the product's own admin, not a Higgsfield account).
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 
 import { bindings } from "./bindings.server";
 
@@ -87,9 +87,9 @@ export async function isAdminRequestAuthenticated(request: Request): Promise<boo
 }
 
 // For use inside createServerFn handlers, which don't receive `request` in
-// their ctx — the ambient request is read via getWebRequest() instead.
+// their ctx — the ambient request is read via getRequest() instead.
 export async function isAdminAuthenticated(): Promise<boolean> {
-  const request = getWebRequest();
+  const request = getRequest();
   if (!request) return false;
   return isAdminRequestAuthenticated(request);
 }

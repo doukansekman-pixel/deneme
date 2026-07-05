@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { bindings } from "../bindings.server";
-import { isAdminRequestAuthenticated } from "../auth.server";
+import { isAdminAuthenticated } from "../auth.server";
 import type { MenuCategory, MenuItemRow, SiteSettings } from "./public.functions";
 
 class UnauthorizedError extends Error {
@@ -11,22 +11,20 @@ class UnauthorizedError extends Error {
   }
 }
 
-async function requireAdmin(request: Request | undefined) {
-  if (!request || !(await isAdminRequestAuthenticated(request))) {
+async function requireAdmin() {
+  if (!(await isAdminAuthenticated())) {
     throw new UnauthorizedError();
   }
 }
 
 export const checkAdminSession = createServerFn({ method: "GET" }).handler(
-  async ({ request }): Promise<{ authenticated: boolean }> => {
-    return {
-      authenticated: Boolean(request && (await isAdminRequestAuthenticated(request))),
-    };
+  async (): Promise<{ authenticated: boolean }> => {
+    return { authenticated: await isAdminAuthenticated() };
   },
 );
 
-export const adminGetAll = createServerFn({ method: "GET" }).handler(async ({ request }) => {
-  await requireAdmin(request);
+export const adminGetAll = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdmin();
   const { DB } = bindings();
   if (!DB) return { settings: null as SiteSettings | null, categories: [], items: [] };
 
@@ -60,8 +58,8 @@ const settingsSchema = z.object({
 
 export const adminUpdateSettings = createServerFn({ method: "POST" })
   .inputValidator(settingsSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare(
@@ -88,8 +86,8 @@ const categoryCreateSchema = z.object({ name: z.string().min(1).max(80) });
 
 export const adminCreateCategory = createServerFn({ method: "POST" })
   .inputValidator(categoryCreateSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     const id = crypto.randomUUID();
@@ -111,8 +109,8 @@ const categoryUpdateSchema = z.object({
 
 export const adminUpdateCategory = createServerFn({ method: "POST" })
   .inputValidator(categoryUpdateSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare("UPDATE menu_categories SET name = ?, sort_order = ? WHERE id = ?")
@@ -123,8 +121,8 @@ export const adminUpdateCategory = createServerFn({ method: "POST" })
 
 export const adminDeleteCategory = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare("DELETE FROM menu_items WHERE category_id = ?").bind(data.id).run();
@@ -142,8 +140,8 @@ const itemCreateSchema = z.object({
 
 export const adminCreateItem = createServerFn({ method: "POST" })
   .inputValidator(itemCreateSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     const id = crypto.randomUUID();
@@ -173,8 +171,8 @@ const itemUpdateSchema = z.object({
 
 export const adminUpdateItem = createServerFn({ method: "POST" })
   .inputValidator(itemUpdateSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare(
@@ -187,8 +185,8 @@ export const adminUpdateItem = createServerFn({ method: "POST" })
 
 export const adminDeleteItem = createServerFn({ method: "POST" })
   .inputValidator(idSchema)
-  .handler(async ({ data, request }) => {
-    await requireAdmin(request);
+  .handler(async ({ data }) => {
+    await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare("DELETE FROM menu_items WHERE id = ?").bind(data.id).run();

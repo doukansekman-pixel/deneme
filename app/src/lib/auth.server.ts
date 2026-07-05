@@ -1,6 +1,8 @@
 // This site's OWN admin auth — a single password gate for the menu admin
 // panel. Not Higgsfield/fnf auth (see references/auth.md's distinction: this
 // is in-app auth for the product's own admin, not a Higgsfield account).
+import { getWebRequest } from "@tanstack/react-start/server";
+
 import { bindings } from "./bindings.server";
 
 export const SESSION_COOKIE_NAME = "vype_admin_session";
@@ -18,6 +20,16 @@ function base64UrlDecode(value: string): Uint8Array {
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes;
+}
+
+// Cloudflare Workers' SubtleCrypto ships a non-standard timingSafeEqual, but
+// the TS lib types don't declare it. A manual constant-time compare avoids
+// the type gap and is equally safe (length check, then constant-time XOR).
+function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.byteLength !== b.byteLength) return false;
+  let diff = 0;
+  for (let i = 0; i < a.byteLength; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
 }
 
 async function hmacKey(secret: string): Promise<CryptoKey> {
@@ -56,8 +68,7 @@ async function verifySessionToken(token: string): Promise<boolean> {
 
   const expected = base64UrlDecode(await sign(payload, SESSION_SECRET));
   const actual = base64UrlDecode(signature);
-  if (expected.byteLength !== actual.byteLength) return false;
-  return crypto.subtle.timingSafeEqual(expected, actual);
+  return timingSafeEqual(expected, actual);
 }
 
 function parseCookie(cookieHeader: string | null, name: string): string | null {
@@ -75,13 +86,20 @@ export async function isAdminRequestAuthenticated(request: Request): Promise<boo
   return verifySessionToken(token);
 }
 
+// For use inside createServerFn handlers, which don't receive `request` in
+// their ctx — the ambient request is read via getWebRequest() instead.
+export async function isAdminAuthenticated(): Promise<boolean> {
+  const request = getWebRequest();
+  if (!request) return false;
+  return isAdminRequestAuthenticated(request);
+}
+
 export async function verifyAdminPassword(password: string): Promise<boolean> {
   const { ADMIN_PASSWORD } = bindings();
   if (!ADMIN_PASSWORD) return false;
   const expected = new TextEncoder().encode(ADMIN_PASSWORD);
   const actual = new TextEncoder().encode(password);
-  if (expected.byteLength !== actual.byteLength) return false;
-  return crypto.subtle.timingSafeEqual(expected, actual);
+  return timingSafeEqual(expected, actual);
 }
 
 export function buildSessionCookie(token: string): string {

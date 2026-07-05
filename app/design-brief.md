@@ -81,6 +81,36 @@ cookie, no Higgsfield/fnf auth — this is the site's own admin, not a
 Higgsfield account). Placeholder menu content ships on launch; the owner
 replaces it from `/admin`. WiFi fields ship empty on purpose.
 
+## Update — German relaunch (real venue)
+
+The build pivoted from a fictional placeholder brand to the real business:
+**Vype Lounge**, a shisha/cocktail lounge at Darmstädter Str. 75, 64331
+Weiterstadt, Germany (real site: vype-bar.de). Changes made and why:
+
+- **Language/currency**: public site now German, prices in EUR. The admin
+  panel stays Turkish (the owner's own language for day-to-day editing) —
+  a deliberate split between customer-facing and operator-facing surfaces.
+- **Real photography, zero extra generation cost**: the user authorized
+  pulling photos directly from the real site (vype-bar.de). Hero + gallery
+  + a few menu items now use real venue photos (downloaded, resized,
+  reoriented) instead of AI generation — supersedes the original "1 AI
+  hero image" plan and spends no additional credits.
+- **Menu item images**: `menu_items.image_url` (nullable) is now
+  admin-editable; category headers stay text-only per the user's request.
+- **Shisha category added**: the real business is primarily a shisha
+  lounge (confirmed via the real site's title tag and door signage), so a
+  Shisha category with starter flavors now leads the menu.
+- **New pages**: `/impressionen` (real photo gallery, mirrors the real
+  site's page of the same name), `/impressum` and `/datenschutz` (German
+  legal requirement — drafted from known facts, flagged where the owner
+  must still supply the responsible person's legal name before going live).
+  The real site's `/karte` page was deliberately NOT mirrored — its content
+  already exists here as the Menü section.
+- **Hero motion**: replaced the static hero with `ScrollDepthHero` — a
+  scroll-linked perspective/scale/rotateX effect (transform-only, no
+  opacity gating, `prefers-reduced-motion` disables it entirely). No new
+  motion library, no WebGL/3D asset.
+
 ## Second site (not yet built)
 A second bar, "Hype Bar", gets its own `create_website` + this same flow
 later — separate concept spine, separate palette (must differ on the

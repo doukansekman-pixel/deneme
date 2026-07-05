@@ -21,6 +21,7 @@ export type MenuItemRow = {
   name: string;
   description: string;
   price: string;
+  image_url: string;
   is_available: number;
   sort_order: number;
 };
@@ -32,7 +33,7 @@ export type PublicMenuData = {
 };
 
 const DEFAULT_SETTINGS: SiteSettings = {
-  site_name: "Vype Bar",
+  site_name: "Vype Lounge",
   tagline: "",
   about_text: "",
   address: "",
@@ -57,7 +58,7 @@ export const getPublicMenuData = createServerFn({ method: "GET" }).handler(
         "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
       ).all<MenuCategory>(),
       DB.prepare(
-        "SELECT id, category_id, name, description, price, is_available, sort_order FROM menu_items WHERE is_available = 1 ORDER BY sort_order ASC",
+        "SELECT id, category_id, name, description, price, image_url, is_available, sort_order FROM menu_items WHERE is_available = 1 ORDER BY sort_order ASC",
       ).all<MenuItemRow>(),
     ]);
 

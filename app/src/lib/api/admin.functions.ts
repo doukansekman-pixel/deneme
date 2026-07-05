@@ -34,7 +34,7 @@ export const adminGetAll = createServerFn({ method: "GET" }).handler(async () =>
       "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
     ).all<MenuCategory>(),
     DB.prepare(
-      "SELECT id, category_id, name, description, price, is_available, sort_order FROM menu_items ORDER BY sort_order ASC",
+      "SELECT id, category_id, name, description, price, image_url, is_available, sort_order FROM menu_items ORDER BY sort_order ASC",
     ).all<MenuItemRow>(),
   ]);
 
@@ -130,11 +130,20 @@ export const adminDeleteCategory = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+const imageUrlSchema = z
+  .string()
+  .max(500)
+  .refine(
+    (v) => v === "" || v.startsWith("/") || v.startsWith("https://") || v.startsWith("http://"),
+    "invalid_image_url",
+  );
+
 const itemCreateSchema = z.object({
   category_id: z.string().min(1).max(64),
   name: z.string().min(1).max(120),
   description: z.string().max(400),
   price: z.string().max(40),
+  image_url: imageUrlSchema,
   is_available: z.boolean(),
 });
 
@@ -152,9 +161,18 @@ export const adminCreateItem = createServerFn({ method: "POST" })
       .first<{ max_order: number }>();
     const sortOrder = (maxRow?.max_order ?? 0) + 1;
     await DB.prepare(
-      "INSERT INTO menu_items (id, category_id, name, description, price, is_available, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO menu_items (id, category_id, name, description, price, image_url, is_available, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     )
-      .bind(id, data.category_id, data.name, data.description, data.price, data.is_available ? 1 : 0, sortOrder)
+      .bind(
+        id,
+        data.category_id,
+        data.name,
+        data.description,
+        data.price,
+        data.image_url,
+        data.is_available ? 1 : 0,
+        sortOrder,
+      )
       .run();
     return { ok: true as const, id };
   });
@@ -165,6 +183,7 @@ const itemUpdateSchema = z.object({
   name: z.string().min(1).max(120),
   description: z.string().max(400),
   price: z.string().max(40),
+  image_url: imageUrlSchema,
   is_available: z.boolean(),
   sort_order: z.number().int(),
 });
@@ -176,9 +195,18 @@ export const adminUpdateItem = createServerFn({ method: "POST" })
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare(
-      "UPDATE menu_items SET category_id = ?, name = ?, description = ?, price = ?, is_available = ?, sort_order = ? WHERE id = ?",
+      "UPDATE menu_items SET category_id = ?, name = ?, description = ?, price = ?, image_url = ?, is_available = ?, sort_order = ? WHERE id = ?",
     )
-      .bind(data.category_id, data.name, data.description, data.price, data.is_available ? 1 : 0, data.sort_order, data.id)
+      .bind(
+        data.category_id,
+        data.name,
+        data.description,
+        data.price,
+        data.image_url,
+        data.is_available ? 1 : 0,
+        data.sort_order,
+        data.id,
+      )
       .run();
     return { ok: true as const };
   });

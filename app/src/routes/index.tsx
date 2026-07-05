@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { StructuredData } from "../components/StructuredData";
-import { MenuCta } from "../components/MenuCta";
+import { ScrollDepthHero } from "../components/ScrollDepthHero";
 import { getPublicMenuData } from "../lib/api/public.functions";
 import type { MenuCategory, MenuItemRow } from "../lib/api/public.functions";
 
@@ -9,11 +9,11 @@ export const Route = createFileRoute("/")({
   loader: () => getPublicMenuData(),
   head: () => ({
     meta: [
-      { title: "Vype Bar - Kokteyl. Müzik. Gece." },
+      { title: "Vype Lounge - Shisha, Cocktails & mehr in Weiterstadt" },
       {
         name: "description",
         content:
-          "Vype Bar'ın güncel menüsü, adresi ve Instagram'ı. Şehrin merkezinde her gün açığız.",
+          "Die aktuelle Karte der Vype Lounge in Weiterstadt: Shisha, Cocktails, Snacks, Adresse und Öffnungszeiten.",
       },
     ],
   }),
@@ -44,6 +44,12 @@ function Nav({ siteName, instagramUrl }: { siteName: string; instagramUrl: strin
           >
             Menü
           </a>
+          <Link
+            to="/impressionen"
+            className="font-vb-mono text-xs uppercase tracking-[0.15em] text-vb-text-secondary transition-colors hover:text-vb-text"
+          >
+            Impressionen
+          </Link>
           {instagramUrl ? (
             <a
               href={instagramUrl}
@@ -58,38 +64,6 @@ function Nav({ siteName, instagramUrl }: { siteName: string; instagramUrl: strin
         </div>
       </nav>
     </header>
-  );
-}
-
-function Hero({ tagline }: { tagline: string }) {
-  return (
-    <section id="top" className="relative flex min-h-[85dvh] items-end overflow-hidden">
-      <img
-        src="/assets/hero.png"
-        alt="Vype Bar'da özenle hazırlanmış imza bir kokteylin yakın çekimi, loş ışıklı bar atmosferi"
-        className="absolute inset-0 h-full w-full object-cover"
-        fetchPriority="high"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-vb-bg via-vb-bg/55 to-vb-bg/10"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(226,56,95,0.18),_transparent_60%)]"
-      />
-      <div className="relative mx-auto w-full max-w-5xl px-6 pb-16 pt-40 motion-safe:animate-[vb-fade-up_0.8s_ease-out]">
-        <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-text md:text-6xl">
-          {tagline}
-        </h1>
-        <p className="mt-5 max-w-md text-base leading-relaxed text-vb-text-secondary">
-          Gün batımından gün doğumuna, özenle hazırlanmış kokteyller ve seçme müzikler.
-        </p>
-        <div className="mt-8">
-          <MenuCta href="#menu">Menüyü Gör</MenuCta>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -129,25 +103,35 @@ function Menu({
             </h3>
             <ul className="mt-5 divide-y divide-vb-border">
               {categoryItems.map((item) => (
-                <li key={item.id} className="flex items-baseline justify-between gap-6 py-4">
-                  <div>
-                    <p className="text-lg text-vb-text">{item.name}</p>
-                    {item.description ? (
-                      <p className="mt-1 max-w-md text-sm text-vb-text-secondary">
-                        {item.description}
-                      </p>
-                    ) : null}
+                <li key={item.id} className="flex items-start gap-4 py-4">
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="h-16 w-16 shrink-0 rounded-md object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <div className="flex flex-1 items-baseline justify-between gap-6">
+                    <div>
+                      <p className="text-lg text-vb-text">{item.name}</p>
+                      {item.description ? (
+                        <p className="mt-1 max-w-md text-sm text-vb-text-secondary">
+                          {item.description}
+                        </p>
+                      ) : null}
+                    </div>
+                    <p className="whitespace-nowrap font-vb-mono text-sm text-vb-text-secondary">
+                      {item.price}
+                    </p>
                   </div>
-                  <p className="whitespace-nowrap font-vb-mono text-sm text-vb-text-secondary">
-                    {item.price}
-                  </p>
                 </li>
               ))}
             </ul>
           </div>
         ))}
         {grouped.length === 0 ? (
-          <p className="text-vb-text-secondary">Menü yakında burada olacak.</p>
+          <p className="text-vb-text-secondary">Die Karte ist bald hier verfügbar.</p>
         ) : null}
       </div>
     </section>
@@ -173,7 +157,7 @@ function Visit({
       >
         <div>
           <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
-            Bize Uğrayın
+            Besuch uns
           </h2>
           {address ? <p className="mt-4 text-vb-text-secondary">{address}</p> : null}
           {hours ? <p className="mt-1 font-vb-mono text-sm text-vb-text-secondary">{hours}</p> : null}
@@ -181,14 +165,14 @@ function Visit({
         {hasWifi ? (
           <div>
             <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
-              WiFi
+              WLAN
             </h2>
             <p className="mt-4 text-vb-text-secondary">
-              Ağ: <span className="font-vb-mono text-vb-text">{wifiSsid}</span>
+              Netzwerk: <span className="font-vb-mono text-vb-text">{wifiSsid}</span>
             </p>
             {wifiPassword ? (
               <p className="mt-1 text-vb-text-secondary">
-                Şifre: <span className="font-vb-mono text-vb-text">{wifiPassword}</span>
+                Passwort: <span className="font-vb-mono text-vb-text">{wifiPassword}</span>
               </p>
             ) : null}
           </div>
@@ -217,11 +201,20 @@ function Footer({ siteName, instagramUrl }: { siteName: string; instagramUrl: st
             Instagram
           </a>
         ) : null}
+        <div className="flex items-center gap-4 font-vb-mono text-xs text-vb-text-secondary/70">
+          <Link to="/impressum" className="hover:text-vb-text-secondary">
+            Impressum
+          </Link>
+          <span aria-hidden>·</span>
+          <Link to="/datenschutz" className="hover:text-vb-text-secondary">
+            Datenschutz
+          </Link>
+        </div>
         <p className="font-vb-mono text-xs text-vb-text-secondary/70">
           © {year} {siteName}
         </p>
         <a href="/admin/login" className="text-xs text-vb-text-secondary/50 hover:text-vb-text-secondary">
-          Yönetim
+          Verwaltung
         </a>
       </div>
     </footer>
@@ -252,7 +245,11 @@ function Index() {
     <div className="font-vb-display">
       <StructuredData json={schema} />
       <Nav siteName={settings.site_name} instagramUrl={settings.instagram_url} />
-      <Hero tagline={settings.tagline || settings.site_name} />
+      <ScrollDepthHero
+        imageSrc="/assets/hero-lounge.jpg"
+        imageAlt="Blick in die Vype Lounge: hängende Pflanzen, warmes Licht und die Marmorbar"
+        tagline={settings.tagline || settings.site_name}
+      />
       <About aboutText={settings.about_text} />
       <Menu categories={categories} items={items} />
       <Visit

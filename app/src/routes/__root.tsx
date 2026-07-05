@@ -19,9 +19,9 @@ import appMetaJson from "../app-meta.json";
 declare const __HF_DESIGN_INSPECTOR__: boolean;
 
 // Built-in defaults for any field that isn't set in app-meta.json.
-const DEFAULT_TITLE = "Vype Bar - Kokteyl. Müzik. Gece.";
+const DEFAULT_TITLE = "Vype Lounge - Shisha, Cocktails & mehr in Weiterstadt";
 const DEFAULT_DESCRIPTION =
-  "Vype Bar'ın güncel menüsü, adresi ve Instagram'ı. Şehrin merkezinde her gün açığız.";
+  "Die aktuelle Karte der Vype Lounge in Weiterstadt: Shisha, Cocktails, Snacks, Adresse und Öffnungszeiten.";
 
 type AppMeta = {
   og_title?: string | null;
@@ -74,15 +74,15 @@ function buildHead(meta: AppMeta) {
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title },
       { name: "description", content: description },
-      { name: "author", content: "Vype Bar" },
+      { name: "author", content: "Vype Lounge" },
       { name: "theme-color", content: "#0d0c0e" },
       { name: "robots", content: "index, follow, max-image-preview:large" },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_ORIGIN },
-      { property: "og:site_name", content: "Vype Bar" },
-      { property: "og:locale", content: "tr_TR" },
+      { property: "og:site_name", content: "Vype Lounge" },
+      { property: "og:locale", content: "de_DE" },
       { name: "twitter:card", content: ogImage ? "summary_large_image" : "summary" },
       ...(ogImage
         ? [
@@ -111,15 +111,15 @@ function NotFoundComponent() {
     <div className="grid min-h-dvh place-items-center bg-vb-bg px-4 font-vb-display text-vb-text">
       <div className="max-w-md text-center">
         <p className="font-vb-mono text-sm uppercase tracking-[0.2em] text-vb-accent">404</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Bu sayfa yok</h1>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Diese Seite gibt es nicht</h1>
         <p className="mt-2 text-vb-text-secondary">
-          Aradığınız sayfa taşınmış ya da hiç var olmamış olabilir.
+          Die gesuchte Seite wurde verschoben oder existiert nicht mehr.
         </p>
         <Link
           to="/"
           className="mt-6 inline-block border-b border-vb-accent pb-0.5 text-vb-text transition-colors hover:text-vb-accent"
         >
-          Ana sayfaya dön
+          Zur Startseite
         </Link>
       </div>
     </div>
@@ -136,9 +136,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="grid min-h-dvh place-items-center bg-vb-bg px-4 font-vb-display text-vb-text">
       <div className="max-w-md text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Bir şeyler ters gitti</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Etwas ist schiefgelaufen</h1>
         <p className="mt-2 text-vb-text-secondary">
-          Sayfa yüklenemedi. Yeniden deneyebilir ya da ana sayfaya dönebilirsiniz.
+          Die Seite konnte nicht geladen werden. Versuche es erneut oder gehe zur Startseite.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-4">
           <button
@@ -148,10 +148,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="border-b border-vb-accent pb-0.5 transition-colors hover:text-vb-accent"
           >
-            Tekrar dene
+            Erneut versuchen
           </button>
           <a href="/" className="border-b border-vb-border pb-0.5 transition-colors hover:border-vb-accent hover:text-vb-accent">
-            Ana sayfa
+            Startseite
           </a>
         </div>
       </div>
@@ -170,7 +170,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr" style={{ colorScheme: "dark" }}>
+    <html lang="de" style={{ colorScheme: "dark" }}>
       <head>
         <HeadContent />
       </head>

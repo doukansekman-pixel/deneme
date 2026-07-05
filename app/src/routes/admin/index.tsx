@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/")({
   },
   loader: () => adminGetAll(),
   head: () => ({
-    meta: [{ title: "Yönetim - Vype Bar" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Yönetim - Vype Lounge" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminDashboard,
 });
@@ -60,7 +60,7 @@ function AdminDashboard() {
   return (
     <div className="min-h-dvh bg-vb-bg font-vb-display text-vb-text">
       <header className="flex items-center justify-between border-b border-vb-border px-6 py-5">
-        <h1 className="text-lg font-semibold tracking-tight">Vype Bar Yönetim</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Vype Lounge Yönetim</h1>
         <div className="flex items-center gap-6 text-sm">
           <a href="/" target="_blank" rel="noreferrer" className="text-vb-text-secondary hover:text-vb-text">
             Siteyi Gör
@@ -324,6 +324,7 @@ function ItemRow({
           name: form.name,
           description: form.description,
           price: form.price,
+          image_url: form.image_url,
           is_available: form.is_available === 1,
           sort_order: form.sort_order,
         },
@@ -347,41 +348,54 @@ function ItemRow({
   }
 
   return (
-    <li className="grid gap-2 border-b border-vb-border py-4 md:grid-cols-[1fr_1fr_100px_auto_auto] md:items-center md:gap-3">
-      <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ad" />
-      <input
-        className={inputClass}
-        value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
-        placeholder="Açıklama"
-      />
-      <input className={inputClass} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="Fiyat" />
-      <select
-        className={inputClass}
-        value={form.category_id}
-        onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-      >
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
-      <div className="flex items-center gap-3">
-        <label className="flex items-center gap-2 text-xs text-vb-text-secondary">
-          <input
-            type="checkbox"
-            checked={form.is_available === 1}
-            onChange={(e) => setForm({ ...form, is_available: e.target.checked ? 1 : 0 })}
-          />
-          Aktif
-        </label>
-        <button onClick={save} disabled={saving} className="text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-          Kaydet
-        </button>
-        <button onClick={remove} className="text-xs text-vb-text-secondary hover:text-vb-accent">
-          Sil
-        </button>
+    <li className="border-b border-vb-border py-4">
+      <div className="grid gap-2 md:grid-cols-[1fr_1fr_100px_auto_auto] md:items-center md:gap-3">
+        <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ad" />
+        <input
+          className={inputClass}
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="Açıklama"
+        />
+        <input className={inputClass} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="Fiyat" />
+        <select
+          className={inputClass}
+          value={form.category_id}
+          onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+        >
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-xs text-vb-text-secondary">
+            <input
+              type="checkbox"
+              checked={form.is_available === 1}
+              onChange={(e) => setForm({ ...form, is_available: e.target.checked ? 1 : 0 })}
+            />
+            Aktif
+          </label>
+          <button onClick={save} disabled={saving} className="text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+            Kaydet
+          </button>
+          <button onClick={remove} className="text-xs text-vb-text-secondary hover:text-vb-accent">
+            Sil
+          </button>
+        </div>
+      </div>
+      <div className="mt-2 flex items-center gap-3">
+        {form.image_url ? (
+          <img src={form.image_url} alt="" className="h-10 w-10 rounded object-cover" />
+        ) : null}
+        <input
+          className={inputClass}
+          value={form.image_url}
+          onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+          placeholder="Görsel URL (opsiyonel)"
+        />
       </div>
     </li>
   );
@@ -403,6 +417,7 @@ function ItemsSection({
     name: "",
     description: "",
     price: "",
+    image_url: "",
   });
   const [busy, setBusy] = useState(false);
 
@@ -416,10 +431,11 @@ function ItemsSection({
           name: draft.name.trim(),
           description: draft.description.trim(),
           price: draft.price.trim(),
+          image_url: draft.image_url.trim(),
           is_available: true,
         },
       });
-      setDraft({ category_id: draft.category_id, name: "", description: "", price: "" });
+      setDraft({ category_id: draft.category_id, name: "", description: "", price: "", image_url: "" });
       onChanged();
     } catch (error) {
       await onAuthError(error);
@@ -475,6 +491,12 @@ function ItemsSection({
             </option>
           ))}
         </select>
+        <input
+          className={inputClass}
+          placeholder="Görsel URL (opsiyonel)"
+          value={draft.image_url}
+          onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
+        />
         <button
           onClick={addItem}
           disabled={busy}

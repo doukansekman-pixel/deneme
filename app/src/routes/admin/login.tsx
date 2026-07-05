@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
-    meta: [{ title: "Yönetim Girişi - Vype Bar" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Yönetim Girişi - Vype Lounge" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminLogin,
 });

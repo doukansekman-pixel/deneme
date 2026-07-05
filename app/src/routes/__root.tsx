@@ -36,6 +36,10 @@ const appMeta = appMetaJson as AppMeta;
 // Build the document head (title / description / og: / twitter: / favicon) from
 // app-meta.json, falling back to the defaults above for any unset field.
 const APP_HOST_ZONES = ["higgsfield.app", "higgsfield-dev.app"];
+// The site's canonical production origin (slug from website_repo_access).
+// og:image/og:video must be absolute per the SEO audit, and preview/prod
+// share the same repo, so this is the one stable public URL to anchor them to.
+const SITE_ORIGIN = "https://shiny-beach-364.higgsfield.app";
 
 function toOwnAssetUrl(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -52,12 +56,17 @@ function toOwnAssetUrl(value: string | null | undefined): string | null {
   }
 }
 
+function toAbsoluteUrl(value: string | null): string | null {
+  if (!value) return null;
+  return value.startsWith("/") ? `${SITE_ORIGIN}${value}` : value;
+}
+
 function buildHead(meta: AppMeta) {
   const title = meta.og_title ?? DEFAULT_TITLE;
   const description = meta.og_description ?? DEFAULT_DESCRIPTION;
-  const ogImage = toOwnAssetUrl(meta.og_image_url);
+  const ogImage = toAbsoluteUrl(toOwnAssetUrl(meta.og_image_url));
   const favicon = toOwnAssetUrl(meta.favicon_url) ?? "/favicon.svg";
-  const ogVideo = toOwnAssetUrl(meta.og_video_url);
+  const ogVideo = toAbsoluteUrl(toOwnAssetUrl(meta.og_video_url));
 
   return {
     meta: [
@@ -71,6 +80,7 @@ function buildHead(meta: AppMeta) {
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_ORIGIN },
       { property: "og:site_name", content: "Vype Bar" },
       { property: "og:locale", content: "tr_TR" },
       { name: "twitter:card", content: ogImage ? "summary_large_image" : "summary" },
@@ -85,6 +95,7 @@ function buildHead(meta: AppMeta) {
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: favicon },
+      { rel: "canonical", href: SITE_ORIGIN },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
       {

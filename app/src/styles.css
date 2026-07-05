@@ -36,6 +36,17 @@
  */
 @theme {
   --spacing: 0.25rem;
+
+  /* Vype Bar brand tokens (design-brief.md) — generates bg-vb-*/text-vb-*/
+     border-vb-*/font-vb-* utilities. This website never uses q-* tokens. */
+  --color-vb-bg: #0d0c0e;
+  --color-vb-bg-secondary: #17151a;
+  --color-vb-border: #2a262d;
+  --color-vb-text: #f5f2ef;
+  --color-vb-text-secondary: #9a939c;
+  --color-vb-accent: #e2385f;
+  --font-vb-display: "Outfit", system-ui, sans-serif;
+  --font-vb-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 @theme inline {
@@ -104,5 +115,30 @@
 
   * {
     border-color: var(--hf-color-border-default);
+  }
+}
+
+/*
+ * Vype Bar is a `type: "website"` build: it never reads the `--hf-color-*` /
+ * `--hf-type-*` variables above or any `q-*` utility; those stay wired only
+ * because the scaffold's Tailwind entry point expects them. The `--color-vb-*`
+ * / `--font-vb-*` tokens registered in the `@theme` block above are the site's
+ * own design system (design-brief.md), applied directly on html/body here so
+ * the page never flashes the scaffold's default background.
+ */
+html,
+body {
+  background-color: var(--color-vb-bg);
+  color: var(--color-vb-text);
+}
+
+@keyframes vb-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

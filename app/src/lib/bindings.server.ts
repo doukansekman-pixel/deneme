@@ -24,6 +24,10 @@ type AppEnv = {
   CONTAINER?: DurableObjectNamespace;
   HF_ENV?: string;
   APP_SLUG?: string;
+  // This site's own admin auth secrets (set via website_secrets) — never
+  // Higgsfield/fnf auth. See src/lib/auth.server.ts.
+  ADMIN_PASSWORD?: string;
+  SESSION_SECRET?: string;
 };
 
 export function bindings(): AppEnv {

@@ -37,6 +37,7 @@ const EMPTY_SETTINGS: SiteSettings = {
   instagram_url: "",
   wifi_ssid: "",
   wifi_password: "",
+  datenschutz_text: "",
 };
 
 function AdminDashboard() {
@@ -199,6 +200,16 @@ function SettingsForm({
             />
           </Field>
         </div>
+        <div className="md:col-span-2">
+          <Field label="Datenschutz Metni (gizlilik politikası)">
+            <textarea
+              rows={10}
+              className={`${inputClass} font-mono text-xs`}
+              value={form.datenschutz_text}
+              onChange={(e) => setForm({ ...form, datenschutz_text: e.target.value })}
+            />
+          </Field>
+        </div>
       </div>
       <div className="mt-5 flex items-center gap-4">
         <button
@@ -300,6 +311,17 @@ function CategoriesSection({
   );
 }
 
+async function uploadAdminImage(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+  const response = await fetch("/api/admin/upload", { method: "POST", body });
+  if (!response.ok) {
+    throw new Error(response.status === 401 ? "unauthorized" : "upload_failed");
+  }
+  const result = (await response.json()) as { url: string };
+  return result.url;
+}
+
 function ItemRow({
   item,
   categories,
@@ -313,6 +335,7 @@ function ItemRow({
 }) {
   const [form, setForm] = useState(item);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   async function save() {
     setSaving(true);
@@ -323,7 +346,7 @@ function ItemRow({
           category_id: form.category_id,
           name: form.name,
           description: form.description,
-          price: form.price,
+          price_amount: form.price_amount,
           image_url: form.image_url,
           is_available: form.is_available === 1,
           sort_order: form.sort_order,
@@ -347,6 +370,19 @@ function ItemRow({
     }
   }
 
+  async function onFileSelected(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAdminImage(file);
+      setForm({ ...form, image_url: url });
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <li className="border-b border-vb-border py-4">
       <div className="grid gap-2 md:grid-cols-[1fr_1fr_100px_auto_auto] md:items-center md:gap-3">
@@ -357,7 +393,18 @@ function ItemRow({
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           placeholder="Açıklama"
         />
-        <input className={inputClass} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="Fiyat" />
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            className={inputClass}
+            value={form.price_amount}
+            onChange={(e) => setForm({ ...form, price_amount: Number(e.target.value) })}
+            placeholder="Fiyat"
+          />
+          <span className="shrink-0 text-sm text-vb-text-secondary">€</span>
+        </div>
         <select
           className={inputClass}
           value={form.category_id}
@@ -386,7 +433,7 @@ function ItemRow({
           </button>
         </div>
       </div>
-      <div className="mt-2 flex items-center gap-3">
+      <div className="mt-2 flex flex-wrap items-center gap-3">
         {form.image_url ? (
           <img src={form.image_url} alt="" className="h-10 w-10 rounded object-cover" />
         ) : null}
@@ -396,6 +443,16 @@ function ItemRow({
           onChange={(e) => setForm({ ...form, image_url: e.target.value })}
           placeholder="Görsel URL (opsiyonel)"
         />
+        <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => onFileSelected(e.target.files?.[0])}
+          />
+        </label>
       </div>
     </li>
   );
@@ -416,10 +473,11 @@ function ItemsSection({
     category_id: categories[0]?.id ?? "",
     name: "",
     description: "",
-    price: "",
+    price_amount: 0,
     image_url: "",
   });
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   async function addItem() {
     if (!draft.name.trim() || !draft.category_id) return;
@@ -430,17 +488,30 @@ function ItemsSection({
           category_id: draft.category_id,
           name: draft.name.trim(),
           description: draft.description.trim(),
-          price: draft.price.trim(),
+          price_amount: draft.price_amount,
           image_url: draft.image_url.trim(),
           is_available: true,
         },
       });
-      setDraft({ category_id: draft.category_id, name: "", description: "", price: "", image_url: "" });
+      setDraft({ category_id: draft.category_id, name: "", description: "", price_amount: 0, image_url: "" });
       onChanged();
     } catch (error) {
       await onAuthError(error);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function onDraftFileSelected(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAdminImage(file);
+      setDraft({ ...draft, image_url: url });
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -474,12 +545,18 @@ function ItemsSection({
           value={draft.description}
           onChange={(e) => setDraft({ ...draft, description: e.target.value })}
         />
-        <input
-          className={inputClass}
-          placeholder="Fiyat"
-          value={draft.price}
-          onChange={(e) => setDraft({ ...draft, price: e.target.value })}
-        />
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            className={inputClass}
+            placeholder="Fiyat"
+            value={draft.price_amount}
+            onChange={(e) => setDraft({ ...draft, price_amount: Number(e.target.value) })}
+          />
+          <span className="shrink-0 text-sm text-vb-text-secondary">€</span>
+        </div>
         <select
           className={inputClass}
           value={draft.category_id}
@@ -497,6 +574,16 @@ function ItemsSection({
           value={draft.image_url}
           onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
         />
+        <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => onDraftFileSelected(e.target.files?.[0])}
+          />
+        </label>
         <button
           onClick={addItem}
           disabled={busy}

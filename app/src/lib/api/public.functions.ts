@@ -11,6 +11,7 @@ export type SiteSettings = {
   instagram_url: string;
   wifi_ssid: string;
   wifi_password: string;
+  datenschutz_text: string;
 };
 
 export type MenuCategory = { id: string; name: string; sort_order: number };
@@ -20,7 +21,7 @@ export type MenuItemRow = {
   category_id: string;
   name: string;
   description: string;
-  price: string;
+  price_amount: number;
   image_url: string;
   is_available: number;
   sort_order: number;
@@ -41,6 +42,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   instagram_url: "",
   wifi_ssid: "",
   wifi_password: "",
+  datenschutz_text: "",
 };
 
 // Public read: the live menu + settings for the homepage. No auth — this is
@@ -58,7 +60,7 @@ export const getPublicMenuData = createServerFn({ method: "GET" }).handler(
         "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
       ).all<MenuCategory>(),
       DB.prepare(
-        "SELECT id, category_id, name, description, price, image_url, is_available, sort_order FROM menu_items WHERE is_available = 1 ORDER BY sort_order ASC",
+        "SELECT id, category_id, name, description, price_amount, image_url, is_available, sort_order FROM menu_items WHERE is_available = 1 ORDER BY sort_order ASC",
       ).all<MenuItemRow>(),
     ]);
 

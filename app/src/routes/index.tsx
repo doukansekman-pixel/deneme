@@ -4,6 +4,7 @@ import { StructuredData } from "../components/StructuredData";
 import { ScrollDepthHero } from "../components/ScrollDepthHero";
 import { getPublicMenuData } from "../lib/api/public.functions";
 import type { MenuCategory, MenuItemRow } from "../lib/api/public.functions";
+import { formatEuro } from "../lib/format";
 
 export const Route = createFileRoute("/")({
   loader: () => getPublicMenuData(),
@@ -122,7 +123,7 @@ function Menu({
                       ) : null}
                     </div>
                     <p className="whitespace-nowrap font-vb-mono text-sm text-vb-text-secondary">
-                      {item.price}
+                      {formatEuro(item.price_amount)}
                     </p>
                   </div>
                 </li>

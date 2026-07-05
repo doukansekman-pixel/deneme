@@ -37,8 +37,8 @@
 @theme {
   --spacing: 0.25rem;
 
-  /* Vype Bar brand tokens (design-brief.md) — generates bg-vb-*/text-vb-*/
-     border-vb-*/font-vb-* utilities. This website never uses q-* tokens. */
+  /* Vype Bar brand tokens (design-brief.md) - generates bg-vb, text-vb,
+     border-vb and font-vb utilities. This website never uses q- tokens. */
   --color-vb-bg: #0d0c0e;
   --color-vb-bg-secondary: #17151a;
   --color-vb-border: #2a262d;

@@ -28,9 +28,9 @@ export function ScrollDepthHero({
       ticking = false;
       const distance = window.innerHeight;
       const progress = Math.min(Math.max(window.scrollY / distance, 0), 1);
-      const scale = 1 - progress * 0.14;
-      const rotate = progress * 8;
-      const translate = progress * 40;
+      const scale = 1 - progress * 0.2;
+      const rotate = progress * 12;
+      const translate = progress * 60;
       if (frame) {
         frame.style.transform = `translateY(${translate}px) scale(${scale}) rotateX(${rotate}deg)`;
       }

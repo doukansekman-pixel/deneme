@@ -52,7 +52,7 @@ function Datenschutz() {
       <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-3xl items-center px-6">
           <Link to="/" className="flex items-center">
-            <img src="/assets/logo.png" alt="Vype Lounge" className="h-6 w-auto" />
+            <img src={settings.logo_url || "/assets/logo.png"} alt="Vype Lounge" className="h-6 w-auto" />
           </Link>
         </nav>
       </header>

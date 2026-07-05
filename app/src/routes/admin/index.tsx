@@ -40,6 +40,7 @@ const EMPTY_SETTINGS: SiteSettings = {
   wifi_ssid: "",
   wifi_password: "",
   datenschutz_text: "",
+  logo_url: "",
 };
 
 const TABS = [
@@ -162,6 +163,7 @@ function SettingsForm({
 }) {
   const [form, setForm] = useState(initial);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [uploading, setUploading] = useState(false);
 
   async function save() {
     setStatus("saving");
@@ -175,10 +177,50 @@ function SettingsForm({
     }
   }
 
+  async function onLogoFileSelected(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAdminImage(file);
+      setForm({ ...form, logo_url: url });
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <section>
       <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Site Ayarları</h2>
       <div className="mt-6 grid gap-5 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <Field label="Logo">
+            <div className="flex flex-wrap items-center gap-3">
+              <img
+                src={form.logo_url || "/assets/logo.png"}
+                alt="Logo önizleme"
+                className="h-10 w-auto rounded bg-vb-bg-secondary p-1"
+              />
+              <input
+                className={inputClass}
+                placeholder="Logo URL (boş bırakılırsa varsayılan logo kullanılır)"
+                value={form.logo_url}
+                onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
+              />
+              <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+                {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => onLogoFileSelected(e.target.files?.[0])}
+                />
+              </label>
+            </div>
+          </Field>
+        </div>
         <Field label="Mekan Adı">
           <input
             className={inputClass}

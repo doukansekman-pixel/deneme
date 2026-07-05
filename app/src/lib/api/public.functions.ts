@@ -12,6 +12,7 @@ export type SiteSettings = {
   wifi_ssid: string;
   wifi_password: string;
   datenschutz_text: string;
+  logo_url: string;
 };
 
 export type MenuCategory = { id: string; name: string; sort_order: number };
@@ -50,6 +51,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   wifi_ssid: "",
   wifi_password: "",
   datenschutz_text: "",
+  logo_url: "",
 };
 
 // Public read: the live menu + settings for the homepage. No auth — this is

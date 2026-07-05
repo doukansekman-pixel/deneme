@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { StructuredData } from "../components/StructuredData";
 import { ScrollDepthHero } from "../components/ScrollDepthHero";
+import { TiltImage } from "../components/TiltImage";
 import { getPublicMenuData } from "../lib/api/public.functions";
 import type { MenuCategory, MenuItemRow } from "../lib/api/public.functions";
 import { formatEuro } from "../lib/format";
@@ -31,12 +32,20 @@ function InstagramIcon() {
   );
 }
 
-function Nav({ siteName, instagramUrl }: { siteName: string; instagramUrl: string }) {
+function Nav({
+  siteName,
+  logoUrl,
+  instagramUrl,
+}: {
+  siteName: string;
+  logoUrl: string;
+  instagramUrl: string;
+}) {
   return (
     <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
         <a href="#top" className="flex items-center">
-          <img src="/assets/logo.png" alt={siteName} className="h-6 w-auto" />
+          <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-6 w-auto" />
         </a>
         <div className="flex items-center gap-6">
           <a
@@ -106,12 +115,14 @@ function Menu({
               {categoryItems.map((item) => (
                 <li key={item.id} className="flex items-start gap-4 py-4">
                   {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="h-16 w-16 shrink-0 rounded-md object-cover"
-                      loading="lazy"
-                    />
+                    <div className="shrink-0">
+                      <TiltImage
+                        src={item.image_url}
+                        alt={item.name}
+                        className="h-16 w-16 rounded-md object-cover"
+                        loading="lazy"
+                      />
+                    </div>
                   ) : null}
                   <div className="flex flex-1 items-baseline justify-between gap-6">
                     <div>
@@ -177,7 +188,10 @@ function Visit({
         {address ? (
           <iframe
             title="Vype Lounge auf Google Maps"
-            src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+            // Exact pin from the venue's own Google Maps place link (CID
+            // 0x47bd77882e8bbded:0x5474e6eecd3f4dce), not a re-geocoded
+            // address lookup.
+            src="https://www.google.com/maps?q=49.9055624,8.5882664&z=16&output=embed"
             className="h-72 w-full rounded-md border border-vb-border md:h-full"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -188,12 +202,20 @@ function Visit({
   );
 }
 
-function Footer({ siteName, instagramUrl }: { siteName: string; instagramUrl: string }) {
+function Footer({
+  siteName,
+  logoUrl,
+  instagramUrl,
+}: {
+  siteName: string;
+  logoUrl: string;
+  instagramUrl: string;
+}) {
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-vb-border">
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-10 text-center">
-        <img src="/assets/logo.png" alt={siteName} className="h-7 w-auto opacity-80" />
+        <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-7 w-auto opacity-80" />
         {instagramUrl ? (
           <a
             href={instagramUrl}
@@ -248,7 +270,7 @@ function Index() {
   return (
     <div className="font-vb-display">
       <StructuredData json={schema} />
-      <Nav siteName={settings.site_name} instagramUrl={settings.instagram_url} />
+      <Nav siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
       <ScrollDepthHero
         imageSrc="/assets/hero-lounge.jpg"
         imageAlt="Blick in die Vype Lounge: hängende Pflanzen, warmes Licht und die Marmorbar"
@@ -262,7 +284,7 @@ function Index() {
         wifiSsid={settings.wifi_ssid}
         wifiPassword={settings.wifi_password}
       />
-      <Footer siteName={settings.site_name} instagramUrl={settings.instagram_url} />
+      <Footer siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
     </div>
   );
 }

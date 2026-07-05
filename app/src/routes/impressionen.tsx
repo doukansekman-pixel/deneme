@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { getPublicGallery } from "../lib/api/public.functions";
+import { TiltImage } from "../components/TiltImage";
 
 export const Route = createFileRoute("/impressionen")({
   loader: () => getPublicGallery(),
@@ -45,7 +46,7 @@ function Impressionen() {
 
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3">
           {photos.map((photo) => (
-            <img
+            <TiltImage
               key={photo.id}
               src={photo.image_url}
               alt={photo.caption || "Vype Lounge"}

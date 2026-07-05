@@ -85,6 +85,14 @@ export const adminDeleteGalleryImage = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+const settingsImageUrlSchema = z
+  .string()
+  .max(500)
+  .refine(
+    (v) => v === "" || v.startsWith("/") || v.startsWith("https://") || v.startsWith("http://"),
+    "invalid_image_url",
+  );
+
 const settingsSchema = z.object({
   site_name: z.string().min(1).max(120),
   tagline: z.string().max(200),
@@ -95,6 +103,7 @@ const settingsSchema = z.object({
   wifi_ssid: z.string().max(100),
   wifi_password: z.string().max(100),
   datenschutz_text: z.string().max(30000),
+  logo_url: settingsImageUrlSchema,
 });
 
 export const adminUpdateSettings = createServerFn({ method: "POST" })
@@ -105,7 +114,7 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare(
       `UPDATE site_settings SET site_name = ?, tagline = ?, about_text = ?, address = ?, hours = ?,
-       instagram_url = ?, wifi_ssid = ?, wifi_password = ?, datenschutz_text = ?, updated_at = datetime('now') WHERE id = 1`,
+       instagram_url = ?, wifi_ssid = ?, wifi_password = ?, datenschutz_text = ?, logo_url = ?, updated_at = datetime('now') WHERE id = 1`,
     )
       .bind(
         data.site_name,
@@ -117,6 +126,7 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
         data.wifi_ssid,
         data.wifi_password,
         data.datenschutz_text,
+        data.logo_url,
       )
       .run();
     return { ok: true as const };

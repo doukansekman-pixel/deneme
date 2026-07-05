@@ -45,7 +45,7 @@ function Nav({
     <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
         <a href="#top" className="flex items-center">
-          <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-6 w-auto" />
+          <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-9 w-auto" />
         </a>
         <div className="flex items-center gap-6">
           <a
@@ -188,10 +188,11 @@ function Visit({
         {address ? (
           <iframe
             title="Vype Lounge auf Google Maps"
-            // Exact pin from the venue's own Google Maps place link (CID
-            // 0x47bd77882e8bbded:0x5474e6eecd3f4dce), not a re-geocoded
-            // address lookup.
-            src="https://www.google.com/maps?q=49.9055624,8.5882664&z=16&output=embed"
+            // Search by the venue's actual registered Google Maps business
+            // name + address (from the venue's own Maps place link) so the
+            // embed shows the named business card, not just a bare
+            // lat/lng pin with no label.
+            src="https://www.google.com/maps?q=Vype+Lounge+Shisha-Bar,+Darmst%C3%A4dter+Str.+75,+64331+Weiterstadt&z=16&output=embed"
             className="h-72 w-full rounded-md border border-vb-border md:h-full"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -215,7 +216,7 @@ function Footer({
   return (
     <footer className="border-t border-vb-border">
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-10 text-center">
-        <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-7 w-auto opacity-80" />
+        <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-10 w-auto opacity-80" />
         {instagramUrl ? (
           <a
             href={instagramUrl}

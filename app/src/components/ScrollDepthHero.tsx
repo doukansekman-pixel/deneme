@@ -80,7 +80,7 @@ export function ScrollDepthHero({
           Shisha, Cocktails und die richtige Musik, jeden Tag ab dem Nachmittag.
         </p>
         <div className="mt-8">
-          <MenuCta href="#menu" tone="light">Zur Karte</MenuCta>
+          <MenuCta href="/menu" tone="light">Zur Karte</MenuCta>
         </div>
       </div>
     </section>

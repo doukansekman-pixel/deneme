@@ -3,9 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { StructuredData } from "../components/StructuredData";
 import { ScrollDepthHero } from "../components/ScrollDepthHero";
 import { TiltImage } from "../components/TiltImage";
+import { Reveal3D } from "../components/Reveal3D";
+import { MenuCta } from "../components/MenuCta";
+import { SiteFooter } from "../components/SiteFooter";
 import { getPublicMenuData } from "../lib/api/public.functions";
-import type { MenuCategory, MenuItemRow } from "../lib/api/public.functions";
-import { formatEuro } from "../lib/format";
 
 export const Route = createFileRoute("/")({
   loader: () => getPublicMenuData(),
@@ -48,12 +49,12 @@ function Nav({
           <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-9 w-auto" />
         </a>
         <div className="flex items-center gap-6">
-          <a
-            href="#menu"
+          <Link
+            to="/menu"
             className="font-vb-mono text-xs uppercase tracking-[0.15em] text-vb-text-secondary transition-colors hover:text-vb-text"
           >
             Menü
-          </a>
+          </Link>
           <Link
             to="/impressionen"
             className="font-vb-mono text-xs uppercase tracking-[0.15em] text-vb-text-secondary transition-colors hover:text-vb-text"
@@ -88,65 +89,117 @@ function About({ aboutText }: { aboutText: string }) {
   );
 }
 
-function Menu({
-  categories,
-  items,
+// A photo + a short editorial claim, alternating sides down the page. The
+// site's "more 3D" pass: the photo tilts on pointer (TiltImage) and the
+// whole block settles into place on first scroll-into-view (Reveal3D).
+function FeatureSplit({
+  imageSrc,
+  imageAlt,
+  imageSide,
+  eyebrow,
+  heading,
+  body,
+  cta,
 }: {
-  categories: MenuCategory[];
-  items: MenuItemRow[];
+  imageSrc: string;
+  imageAlt: string;
+  imageSide: "left" | "right";
+  eyebrow: string;
+  heading: string;
+  body: string;
+  cta?: { label: string; href: string };
 }) {
-  const grouped = categories
-    .map((category) => ({
-      category,
-      items: items.filter((item) => item.category_id === category.id),
-    }))
-    .filter((group) => group.items.length > 0);
+  const photo = (
+    <Reveal3D className={imageSide === "left" ? "md:order-1" : "md:order-2"}>
+      <TiltImage
+        src={imageSrc}
+        alt={imageAlt}
+        loading="lazy"
+        className="aspect-[4/3] w-full rounded-md object-cover"
+      />
+    </Reveal3D>
+  );
 
-  return (
-    <section id="menu" className="mx-auto max-w-3xl px-6 py-24">
-      <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">Menü</h2>
-      <div className="mt-12 space-y-14">
-        {grouped.map(({ category, items: categoryItems }) => (
-          <div key={category.id}>
-            <h3 className="font-vb-mono text-xs uppercase tracking-[0.2em] text-vb-accent">
-              {category.name}
-            </h3>
-            <ul className="mt-5 divide-y divide-vb-border">
-              {categoryItems.map((item) => (
-                <li key={item.id} className="flex items-start gap-4 py-4">
-                  {item.image_url ? (
-                    <div className="shrink-0">
-                      <TiltImage
-                        src={item.image_url}
-                        alt={item.name}
-                        className="h-16 w-16 rounded-md object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : null}
-                  <div className="flex flex-1 items-baseline justify-between gap-6">
-                    <div>
-                      <p className="text-lg text-vb-text">{item.name}</p>
-                      {item.description ? (
-                        <p className="mt-1 max-w-md text-sm text-vb-text-secondary">
-                          {item.description}
-                        </p>
-                      ) : null}
-                    </div>
-                    <p className="whitespace-nowrap font-vb-mono text-sm text-vb-text-secondary">
-                      {formatEuro(item.price_amount)}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+  const copy = (
+    <Reveal3D className={imageSide === "left" ? "md:order-2" : "md:order-1"}>
+      <div className="flex h-full flex-col justify-center">
+        <h3 className="font-vb-mono text-xs uppercase tracking-[0.2em] text-vb-accent">{eyebrow}</h3>
+        <h2 className="mt-4 font-vb-display text-2xl font-semibold tracking-tight text-vb-text md:text-3xl">
+          {heading}
+        </h2>
+        <p className="mt-4 max-w-md text-vb-text-secondary">{body}</p>
+        {cta ? (
+          <div className="mt-6">
+            <MenuCta href={cta.href}>{cta.label}</MenuCta>
           </div>
-        ))}
-        {grouped.length === 0 ? (
-          <p className="text-vb-text-secondary">Die Karte ist bald hier verfügbar.</p>
         ) : null}
       </div>
+    </Reveal3D>
+  );
+
+  return (
+    <section className="mx-auto max-w-5xl px-6 py-16 md:py-20">
+      <div className="grid gap-10 md:grid-cols-2 md:items-center md:gap-14">
+        {photo}
+        {copy}
+      </div>
     </section>
+  );
+}
+
+// The one lighter, gold-toned band on an otherwise dark espresso page - a
+// deliberate rhythm break borrowed from the real venue's own site, built
+// from our own photos rather than copied wholesale. Dark text here since
+// the accent token itself is a light gold (reads as text/hover elsewhere
+// on the dark body, and as this band's fill).
+function AtmosphereBand() {
+  return (
+    <section className="bg-vb-accent py-20 text-vb-bg">
+      <div className="mx-auto grid max-w-5xl items-center gap-8 px-6 md:grid-cols-[1fr_1.1fr_1fr]">
+        <Reveal3D>
+          <TiltImage
+            src="/assets/gallery-shisha-prep.jpg"
+            alt="Shisha wird vorbereitet"
+            loading="lazy"
+            className="aspect-[3/4] w-full rounded-md object-cover"
+          />
+        </Reveal3D>
+        <Reveal3D>
+          <div className="rounded-md bg-vb-bg/10 px-8 py-10 text-center">
+            <h2 className="font-vb-display text-2xl font-semibold tracking-tight md:text-3xl">
+              Wohlfühl-Lounge in Weiterstadt
+            </h2>
+            <p className="mx-auto mt-4 max-w-xs text-vb-bg/75">
+              Ob mit Freunden nach der Arbeit oder für einen ruhigen Abend zu zweit, in der Vype
+              Lounge kommt man an und bleibt gerne.
+            </p>
+          </div>
+        </Reveal3D>
+        <Reveal3D>
+          <TiltImage
+            src="/assets/gallery-interior-2.jpg"
+            alt="Lounge-Bereich der Vype Lounge"
+            loading="lazy"
+            className="aspect-[3/4] w-full rounded-md object-cover"
+          />
+        </Reveal3D>
+      </div>
+    </section>
+  );
+}
+
+function MenuTeaser() {
+  return (
+    <Reveal3D className="mx-auto max-w-3xl px-6 py-24 text-center">
+      <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">Karte</h2>
+      <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">
+        Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer
+        Karte.
+      </p>
+      <div className="mt-6 flex justify-center">
+        <MenuCta href="/menu">Zur Karte</MenuCta>
+      </div>
+    </Reveal3D>
   );
 }
 
@@ -203,53 +256,8 @@ function Visit({
   );
 }
 
-function Footer({
-  siteName,
-  logoUrl,
-  instagramUrl,
-}: {
-  siteName: string;
-  logoUrl: string;
-  instagramUrl: string;
-}) {
-  const year = new Date().getFullYear();
-  return (
-    <footer className="border-t border-vb-border">
-      <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-10 text-center">
-        <img src={logoUrl || "/assets/logo.png"} alt={siteName} className="h-10 w-auto opacity-80" />
-        {instagramUrl ? (
-          <a
-            href={instagramUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-vb-text-secondary transition-colors hover:text-vb-accent"
-          >
-            <InstagramIcon />
-            Instagram
-          </a>
-        ) : null}
-        <div className="flex items-center gap-4 font-vb-mono text-xs text-vb-text-secondary/70">
-          <Link to="/impressum" className="hover:text-vb-text-secondary">
-            Impressum
-          </Link>
-          <span aria-hidden>·</span>
-          <Link to="/datenschutz" className="hover:text-vb-text-secondary">
-            Datenschutz
-          </Link>
-        </div>
-        <p className="font-vb-mono text-xs text-vb-text-secondary/70">
-          © {year} {siteName}
-        </p>
-        <a href="/admin/login" className="text-xs text-vb-text-secondary/50 hover:text-vb-text-secondary">
-          Verwaltung
-        </a>
-      </div>
-    </footer>
-  );
-}
-
 function Index() {
-  const { settings, categories, items } = Route.useLoaderData();
+  const { settings } = Route.useLoaderData();
 
   const schema = JSON.stringify({
     "@context": "https://schema.org",
@@ -278,14 +286,32 @@ function Index() {
         tagline={settings.tagline || settings.site_name}
       />
       <About aboutText={settings.about_text} />
-      <Menu categories={categories} items={items} />
+      <FeatureSplit
+        imageSrc="/assets/menu-item-drinks.jpg"
+        imageAlt="Cocktail der Vype Lounge"
+        imageSide="right"
+        eyebrow="Cocktails"
+        heading="Der passende Begleiter zu jeder Shisha"
+        body="Fruchtige Mocktails, klassische Softdrinks und alles dazwischen, jeden Nachmittag ab Öffnung frisch gemixt."
+      />
+      <FeatureSplit
+        imageSrc="/assets/gallery-interior-1.jpg"
+        imageAlt="Lounge-Bereich mit hängenden Pflanzen"
+        imageSide="left"
+        eyebrow="Ambiente"
+        heading="Entspannte Atmosphäre"
+        body="Sanftes Licht, ruhige Musik und Sitzecken, in denen man gerne länger bleibt. Aus einem kurzen Besuch wird bei uns schnell ein langer Abend."
+        cta={{ label: "Impressionen ansehen", href: "/impressionen" }}
+      />
+      <AtmosphereBand />
+      <MenuTeaser />
       <Visit
         address={settings.address}
         hours={settings.hours}
         wifiSsid={settings.wifi_ssid}
         wifiPassword={settings.wifi_password}
       />
-      <Footer siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
+      <SiteFooter siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
     </div>
   );
 }

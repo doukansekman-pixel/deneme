@@ -27,8 +27,7 @@ function Impressionen() {
             <img src="/assets/logo.png" alt="Vype Lounge" className="h-6 w-auto" />
           </Link>
           <Link
-            to="/"
-            hash="menu"
+            to="/menu"
             className="font-vb-mono text-xs uppercase tracking-[0.15em] text-vb-text-secondary transition-colors hover:text-vb-text"
           >
             Menü

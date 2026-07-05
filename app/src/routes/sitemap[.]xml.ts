@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 const ROUTES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
+  { path: '/menu', priority: '0.9', changefreq: 'weekly' },
   { path: '/impressionen', priority: '0.6', changefreq: 'monthly' },
   { path: '/impressum', priority: '0.3', changefreq: 'yearly' },
   { path: '/datenschutz', priority: '0.3', changefreq: 'yearly' },

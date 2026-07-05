@@ -111,6 +111,63 @@ Weiterstadt, Germany (real site: vype-bar.de). Changes made and why:
   opacity gating, `prefers-reduced-motion` disables it entirely). No new
   motion library, no WebGL/3D asset.
 
+## Update — Karte split into its own page, homepage rebuilt as a business
+page
+
+The owner asked for the homepage to read like a proper venue site rather
+than menu-first: `/karte`'s content moved from a homepage section to its
+own route (`/menu`, own header/footer, same `getPublicMenuData` loader).
+The homepage no longer renders any menu items directly — it closes with a
+short "Karte" teaser (heading + one line + CTA) instead.
+
+The freed-up homepage space became three new sections, referencing the
+real site's own editorial rhythm (photo + claim, alternating sides, one
+saturated band) but built from our own real venue photos and reworked
+layout rather than copied:
+- Two `FeatureSplit` blocks (cocktails; atmosphere, the second with a CTA
+  into `/impressionen`), each pairing a `TiltImage` with a short claim.
+- One `AtmosphereBand` — the page's one saturated full-bleed section
+  (three-across: photo / text card / photo), same "one warm band on an
+  otherwise calm page" idea as the accent-brown `/menu` price kicker, just
+  at section scale.
+- A new `Reveal3D` component (`components/Reveal3D.tsx`) gives every new
+  section a one-shot settle-into-place on first scroll-into-view
+  (translateY + rotateX + opacity, IntersectionObserver-gated,
+  `prefers-reduced-motion` shows the resting state immediately, no
+  observer attached). This is an on-mount reveal per the editorial tier's
+  motion budget, not a second scroll-scrubbed effect — the hero keeps its
+  exclusive continuous scroll-link.
+- `MenuCta` now renders through `Link` for internal paths (was
+  anchor-only) so the hero CTA and nav can route to `/menu` with
+  client-side navigation instead of an in-page anchor.
+- Extracted `SiteFooter` (was a page-local `Footer` in `index.tsx`) so
+  `/menu` and `/` share the same footer instead of a duplicated copy.
+
+## Update — dark palette (owner-specified)
+
+The owner gave an exact background hex, `#211A16`, as closer to the real
+Vype tone than the cream pass above. This flips the whole `--color-vb-*`
+token set from light back to dark (closer to the original locked palette
+before the German-relaunch cream pivot, but a warmer, less neutral near-
+black chosen by the owner rather than the original `#0d0c0e`):
+- `--color-vb-bg: #211a16`, `--color-vb-bg-secondary: #2c231d`,
+  `--color-vb-border: #3d332c`, `--color-vb-text: #f2ece2`,
+  `--color-vb-text-secondary: #b0a496`.
+- `--color-vb-accent` moved from the mid-brown `#674e42` to a lighter
+  gold-taupe `#c9a876` — the mid-brown read at ~1.7:1 against the new dark
+  body (illegible for kickers/hover/focus text, which is accent's main
+  use). The one place accent is used as a *background* (`AtmosphereBand`)
+  flipped its foreground from `text-vb-cream` to `text-vb-bg` to keep
+  reading dark-on-gold instead of light-on-light.
+- `--color-vb-cream` (fixed light tone for hero overlay content) is
+  unchanged — it already worked against the dark hero scrim and still
+  does.
+- `theme-color` meta and the root `colorScheme` flipped back to
+  `#211a16` / `dark`; `favicon.svg` recolored to match (dark rect, gold
+  stroke). The admin dashboard shares the same tokens, so it goes dark
+  too — not asked for specifically, but keeping one token set rather than
+  forking a second palette for the operator-only surface.
+
 ## Second site (not yet built)
 A second bar, "Hype Bar", gets its own `create_website` + this same flow
 later — separate concept spine, separate palette (must differ on the

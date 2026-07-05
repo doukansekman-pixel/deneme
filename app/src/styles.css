@@ -39,17 +39,18 @@
 
   /* Vype Lounge brand tokens (design-brief.md) - generates bg-vb, text-vb,
      border-vb and font-vb utilities. This website never uses q- tokens.
-     Palette matches the real vype-bar.de site: warm cream background,
-     cocoa-brown primary/accent (#674E42), tan secondary (#BFB0A1) - both
-     colors pulled from the live site's own Wix color palette variables. */
-  --color-vb-bg: #faf6ef;
-  --color-vb-bg-secondary: #f0e6d8;
-  --color-vb-border: #e0d3c2;
-  --color-vb-text: #2b2019;
-  --color-vb-text-secondary: #6b5d50;
-  --color-vb-accent: #674e42;
+     Dark espresso-brown background (#211A16, owner-specified as the true
+     Vype tone), warm cream text, and a lighter gold-taupe accent for
+     kickers/prices/hover/focus states so they still read against the
+     dark body. */
+  --color-vb-bg: #211a16;
+  --color-vb-bg-secondary: #2c231d;
+  --color-vb-border: #3d332c;
+  --color-vb-text: #f2ece2;
+  --color-vb-text-secondary: #b0a496;
+  --color-vb-accent: #c9a876;
   /* Fixed light tone for content placed over the dark hero photo, independent
-     of the page's normal dark-on-cream text tokens. */
+     of the page's normal text tokens. */
   --color-vb-cream: #f5efe4;
   --font-vb-display: "Outfit", system-ui, sans-serif;
   --font-vb-mono: "IBM Plex Mono", ui-monospace, monospace;

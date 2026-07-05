@@ -75,7 +75,7 @@ function buildHead(meta: AppMeta) {
       { title },
       { name: "description", content: description },
       { name: "author", content: "Vype Lounge" },
-      { name: "theme-color", content: "#faf6ef" },
+      { name: "theme-color", content: "#211a16" },
       { name: "robots", content: "index, follow, max-image-preview:large" },
       { property: "og:title", content: title },
       { property: "og:description", content: description },
@@ -170,7 +170,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="de" style={{ colorScheme: "light" }}>
+    <html lang="de" style={{ colorScheme: "dark" }}>
       <head>
         <HeadContent />
       </head>

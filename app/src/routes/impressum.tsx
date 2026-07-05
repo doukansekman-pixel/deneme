@@ -15,8 +15,8 @@ function Impressum() {
     <div className="min-h-dvh bg-vb-bg font-vb-display text-vb-text">
       <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-3xl items-center px-6">
-          <Link to="/" className="font-vb-display text-sm font-semibold tracking-[0.15em] text-vb-text">
-            VYPE LOUNGE
+          <Link to="/" className="flex items-center">
+            <img src="/assets/logo.png" alt="Vype Lounge" className="h-6 w-auto" />
           </Link>
         </nav>
       </header>

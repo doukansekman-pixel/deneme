@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { getPublicGallery } from "../lib/api/public.functions";
+
 export const Route = createFileRoute("/impressionen")({
+  loader: () => getPublicGallery(),
   head: () => ({
     meta: [
       { title: "Impressionen - Vype Lounge" },
@@ -13,23 +16,14 @@ export const Route = createFileRoute("/impressionen")({
   component: Impressionen,
 });
 
-const PHOTOS = [
-  { src: "/assets/hero-lounge.jpg", alt: "Lounge-Bereich mit hängenden Pflanzen und warmem Licht" },
-  { src: "/assets/gallery-interior-1.jpg", alt: "Sitzbereich an der Marmorbar" },
-  { src: "/assets/gallery-shisha-prep.jpg", alt: "Frisch aufgesetzte Shisha an der Bar" },
-  { src: "/assets/gallery-cocktail.jpg", alt: "Cocktail mit frischer Minze" },
-  { src: "/assets/gallery-interior-2.jpg", alt: "Blick durch die Lounge Richtung Bar" },
-  { src: "/assets/gallery-storefront-day.jpg", alt: "Eingang der Vype Lounge bei Tag" },
-  { src: "/assets/gallery-storefront-night.jpg", alt: "Leuchtschrift VYPE am Eingang bei Nacht" },
-];
-
 function Impressionen() {
+  const photos = Route.useLoaderData();
   return (
     <div className="min-h-dvh bg-vb-bg font-vb-display text-vb-text">
       <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-          <Link to="/" className="font-vb-display text-sm font-semibold tracking-[0.15em] text-vb-text">
-            VYPE LOUNGE
+          <Link to="/" className="flex items-center">
+            <img src="/assets/logo.png" alt="Vype Lounge" className="h-6 w-auto" />
           </Link>
           <Link
             to="/"
@@ -50,16 +44,19 @@ function Impressionen() {
         </p>
 
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3">
-          {PHOTOS.map((photo) => (
+          {photos.map((photo) => (
             <img
-              key={photo.src}
-              src={photo.src}
-              alt={photo.alt}
+              key={photo.id}
+              src={photo.image_url}
+              alt={photo.caption || "Vype Lounge"}
               loading="lazy"
               className="aspect-[4/5] w-full rounded-md object-cover"
             />
           ))}
         </div>
+        {photos.length === 0 ? (
+          <p className="mt-12 text-vb-text-secondary">Weitere Bilder folgen in Kürze.</p>
+        ) : null}
       </main>
     </div>
   );

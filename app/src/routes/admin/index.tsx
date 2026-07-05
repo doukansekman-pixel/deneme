@@ -2,9 +2,11 @@ import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/rea
 import { useState, type ReactNode } from "react";
 
 import {
+  adminAddGalleryImage,
   adminCreateCategory,
   adminCreateItem,
   adminDeleteCategory,
+  adminDeleteGalleryImage,
   adminDeleteItem,
   adminGetAll,
   adminUpdateCategory,
@@ -12,7 +14,7 @@ import {
   adminUpdateSettings,
   checkAdminSession,
 } from "../../lib/api/admin.functions";
-import type { MenuCategory, MenuItemRow, SiteSettings } from "../../lib/api/public.functions";
+import type { GalleryImage, MenuCategory, MenuItemRow, SiteSettings } from "../../lib/api/public.functions";
 
 export const Route = createFileRoute("/admin/")({
   beforeLoad: async () => {
@@ -40,10 +42,18 @@ const EMPTY_SETTINGS: SiteSettings = {
   datenschutz_text: "",
 };
 
+const TABS = [
+  { id: "settings", label: "Ayarlar" },
+  { id: "menu", label: "Menü" },
+  { id: "gallery", label: "Galeri" },
+] as const;
+type TabId = (typeof TABS)[number]["id"];
+
 function AdminDashboard() {
   const data = Route.useLoaderData();
   const router = useRouter();
   const navigate = useNavigate();
+  const [tab, setTab] = useState<TabId>("settings");
 
   async function onAuthError(error: unknown) {
     if (error instanceof Error && error.message.includes("unauthorized")) {
@@ -72,23 +82,52 @@ function AdminDashboard() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl space-y-16 px-6 py-12">
-        <SettingsForm
-          initial={data.settings ?? EMPTY_SETTINGS}
-          onAuthError={onAuthError}
-          onSaved={() => router.invalidate()}
-        />
-        <CategoriesSection
-          categories={data.categories}
-          onAuthError={onAuthError}
-          onChanged={() => router.invalidate()}
-        />
-        <ItemsSection
-          categories={data.categories}
-          items={data.items}
-          onAuthError={onAuthError}
-          onChanged={() => router.invalidate()}
-        />
+      <nav className="flex gap-2 border-b border-vb-border px-6">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`border-b-2 px-3 py-3 text-sm transition-colors ${
+              tab === t.id
+                ? "border-vb-accent text-vb-text"
+                : "border-transparent text-vb-text-secondary hover:text-vb-text"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      <main className="mx-auto max-w-3xl px-6 py-12">
+        {tab === "settings" ? (
+          <SettingsForm
+            initial={data.settings ?? EMPTY_SETTINGS}
+            onAuthError={onAuthError}
+            onSaved={() => router.invalidate()}
+          />
+        ) : null}
+        {tab === "menu" ? (
+          <div className="space-y-16">
+            <CategoriesSection
+              categories={data.categories}
+              onAuthError={onAuthError}
+              onChanged={() => router.invalidate()}
+            />
+            <ItemsSection
+              categories={data.categories}
+              items={data.items}
+              onAuthError={onAuthError}
+              onChanged={() => router.invalidate()}
+            />
+          </div>
+        ) : null}
+        {tab === "gallery" ? (
+          <GallerySection
+            images={data.gallery}
+            onAuthError={onAuthError}
+            onChanged={() => router.invalidate()}
+          />
+        ) : null}
       </main>
     </div>
   );
@@ -591,6 +630,111 @@ function ItemsSection({
         >
           Ekle
         </button>
+      </div>
+    </section>
+  );
+}
+
+function GallerySection({
+  images,
+  onAuthError,
+  onChanged,
+}: {
+  images: GalleryImage[];
+  onAuthError: (error: unknown) => Promise<boolean>;
+  onChanged: () => void;
+}) {
+  const [caption, setCaption] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function addImage(url: string) {
+    if (!url.trim()) return;
+    setBusy(true);
+    try {
+      await adminAddGalleryImage({ data: { image_url: url.trim(), caption: caption.trim() } });
+      setCaption("");
+      setImageUrl("");
+      onChanged();
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onFileSelected(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAdminImage(file);
+      await addImage(url);
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function remove(image: GalleryImage) {
+    if (!window.confirm("Bu görseli silmek istediğinize emin misiniz?")) return;
+    try {
+      await adminDeleteGalleryImage({ data: { id: image.id } });
+      onChanged();
+    } catch (error) {
+      await onAuthError(error);
+    }
+  }
+
+  return (
+    <section>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Impressionen Galerisi</h2>
+      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {images.map((image) => (
+          <div key={image.id} className="relative">
+            <img src={image.image_url} alt={image.caption} className="aspect-[4/5] w-full rounded object-cover" />
+            <button
+              onClick={() => remove(image)}
+              className="absolute right-1 top-1 bg-vb-bg/90 px-2 py-1 text-xs text-vb-text-secondary hover:text-vb-accent"
+            >
+              Sil
+            </button>
+          </div>
+        ))}
+        {images.length === 0 ? <p className="text-vb-text-secondary">Henüz görsel yok.</p> : null}
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        <input
+          className={inputClass}
+          placeholder="Açıklama (opsiyonel)"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+        />
+        <input
+          className={inputClass}
+          placeholder="Görsel URL"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+        />
+        <button
+          onClick={() => addImage(imageUrl)}
+          disabled={busy}
+          className="shrink-0 border border-vb-text px-4 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
+        >
+          Ekle
+        </button>
+        <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => onFileSelected(e.target.files?.[0])}
+          />
+        </label>
       </div>
     </section>
   );

@@ -35,8 +35,8 @@ function Nav({ siteName, instagramUrl }: { siteName: string; instagramUrl: strin
   return (
     <header className="sticky top-0 z-10 border-b border-vb-border/60 bg-vb-bg/80 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-        <a href="#top" className="font-vb-display text-sm font-semibold tracking-[0.15em] text-vb-text">
-          {siteName.toUpperCase()}
+        <a href="#top" className="flex items-center">
+          <img src="/assets/logo.png" alt={siteName} className="h-6 w-auto" />
         </a>
         <div className="flex items-center gap-6">
           <a
@@ -152,31 +152,36 @@ function Visit({
 }) {
   const hasWifi = wifiSsid.length > 0;
   return (
-    <section className="border-t border-vb-border">
-      <div
-        className={`mx-auto max-w-3xl px-6 py-20 ${hasWifi ? "grid gap-12 md:grid-cols-2" : ""}`}
-      >
+    <section id="visit" className="border-t border-vb-border">
+      <div className="mx-auto grid max-w-5xl gap-10 px-6 py-20 md:grid-cols-2">
         <div>
           <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
             Besuch uns
           </h2>
           {address ? <p className="mt-4 text-vb-text-secondary">{address}</p> : null}
           {hours ? <p className="mt-1 font-vb-mono text-sm text-vb-text-secondary">{hours}</p> : null}
-        </div>
-        {hasWifi ? (
-          <div>
-            <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
-              WLAN
-            </h2>
-            <p className="mt-4 text-vb-text-secondary">
-              Netzwerk: <span className="font-vb-mono text-vb-text">{wifiSsid}</span>
-            </p>
-            {wifiPassword ? (
-              <p className="mt-1 text-vb-text-secondary">
-                Passwort: <span className="font-vb-mono text-vb-text">{wifiPassword}</span>
+          {hasWifi ? (
+            <div className="mt-8">
+              <h3 className="font-vb-mono text-xs uppercase tracking-[0.2em] text-vb-accent">WLAN</h3>
+              <p className="mt-2 text-vb-text-secondary">
+                Netzwerk: <span className="font-vb-mono text-vb-text">{wifiSsid}</span>
               </p>
-            ) : null}
-          </div>
+              {wifiPassword ? (
+                <p className="mt-1 text-vb-text-secondary">
+                  Passwort: <span className="font-vb-mono text-vb-text">{wifiPassword}</span>
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+        {address ? (
+          <iframe
+            title="Vype Lounge auf Google Maps"
+            src={`https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`}
+            className="h-72 w-full rounded-md border border-vb-border md:h-full"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         ) : null}
       </div>
     </section>
@@ -188,9 +193,7 @@ function Footer({ siteName, instagramUrl }: { siteName: string; instagramUrl: st
   return (
     <footer className="border-t border-vb-border">
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-10 text-center">
-        <p className="font-vb-display text-sm tracking-[0.15em] text-vb-text-secondary">
-          {siteName.toUpperCase()}
-        </p>
+        <img src="/assets/logo.png" alt={siteName} className="h-7 w-auto opacity-80" />
         {instagramUrl ? (
           <a
             href={instagramUrl}

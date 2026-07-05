@@ -18,6 +18,7 @@ export function applySecurityHeaders(response: Response): Response {
       "font-src 'self' https://fonts.gstatic.com; " +
       "img-src 'self' data: https:; media-src 'self' https:; " +
       "connect-src 'self' https:; " +
+      "frame-src https://www.google.com; " +
       "frame-ancestors 'self' https://*.higgsfield.app https://higgsfield.app " +
       "https://*.higgsfield.ai https://fnf-dev.anwar-695.workers.dev " +
       "https://feat-apps-marketplace-tools-fnf-dev.anwar-695.workers.dev; " +

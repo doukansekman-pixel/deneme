@@ -65,22 +65,22 @@ export function ScrollDepthHero({
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-vb-bg via-vb-bg/55 to-vb-bg/10"
+          className="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-[#1a120c]/55 to-transparent"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(226,56,95,0.18),_transparent_60%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(191,176,161,0.25),_transparent_60%)]"
         />
       </div>
       <div className="relative mx-auto w-full max-w-5xl px-6 pb-16 pt-40 motion-safe:animate-[vb-fade-up_0.8s_ease-out]">
-        <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-text md:text-6xl">
+        <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-cream md:text-6xl">
           {tagline}
         </h1>
-        <p className="mt-5 max-w-md text-base leading-relaxed text-vb-text-secondary">
+        <p className="mt-5 max-w-md text-base leading-relaxed text-vb-cream/80">
           Shisha, Cocktails und die richtige Musik, jeden Tag ab dem Nachmittag.
         </p>
         <div className="mt-8">
-          <MenuCta href="#menu">Zur Karte</MenuCta>
+          <MenuCta href="#menu" tone="light">Zur Karte</MenuCta>
         </div>
       </div>
     </section>

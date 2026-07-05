@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { bindings } from "../bindings.server";
 import { isAdminAuthenticated } from "../auth.server";
-import type { MenuCategory, MenuItemRow, SiteSettings } from "./public.functions";
+import type { GalleryImage, MenuCategory, MenuItemRow, SiteSettings } from "./public.functions";
 
 class UnauthorizedError extends Error {
   constructor() {
@@ -26,9 +26,11 @@ export const checkAdminSession = createServerFn({ method: "GET" }).handler(
 export const adminGetAll = createServerFn({ method: "GET" }).handler(async () => {
   await requireAdmin();
   const { DB } = bindings();
-  if (!DB) return { settings: null as SiteSettings | null, categories: [], items: [] };
+  if (!DB) {
+    return { settings: null as SiteSettings | null, categories: [], items: [], gallery: [] };
+  }
 
-  const [settingsRow, categoriesResult, itemsResult] = await Promise.all([
+  const [settingsRow, categoriesResult, itemsResult, galleryResult] = await Promise.all([
     DB.prepare("SELECT * FROM site_settings WHERE id = 1").first<SiteSettings>(),
     DB.prepare(
       "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
@@ -36,14 +38,52 @@ export const adminGetAll = createServerFn({ method: "GET" }).handler(async () =>
     DB.prepare(
       "SELECT id, category_id, name, description, price_amount, image_url, is_available, sort_order FROM menu_items ORDER BY sort_order ASC",
     ).all<MenuItemRow>(),
+    DB.prepare(
+      "SELECT id, image_url, caption, sort_order FROM gallery_images ORDER BY sort_order ASC",
+    ).all<GalleryImage>(),
   ]);
 
   return {
     settings: settingsRow,
     categories: categoriesResult.results ?? [],
     items: itemsResult.results ?? [],
+    gallery: galleryResult.results ?? [],
   };
 });
+
+const galleryCreateSchema = z.object({
+  image_url: z.string().min(1).max(500),
+  caption: z.string().max(200),
+});
+
+export const adminAddGalleryImage = createServerFn({ method: "POST" })
+  .inputValidator(galleryCreateSchema)
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    const { DB } = bindings();
+    if (!DB) throw new Error("db_unavailable");
+    const id = crypto.randomUUID();
+    const maxRow = await DB.prepare(
+      "SELECT COALESCE(MAX(sort_order), 0) AS max_order FROM gallery_images",
+    ).first<{ max_order: number }>();
+    const sortOrder = (maxRow?.max_order ?? 0) + 1;
+    await DB.prepare(
+      "INSERT INTO gallery_images (id, image_url, caption, sort_order) VALUES (?, ?, ?, ?)",
+    )
+      .bind(id, data.image_url, data.caption, sortOrder)
+      .run();
+    return { ok: true as const, id };
+  });
+
+export const adminDeleteGalleryImage = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ id: z.string().min(1).max(64) }))
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    const { DB } = bindings();
+    if (!DB) throw new Error("db_unavailable");
+    await DB.prepare("DELETE FROM gallery_images WHERE id = ?").bind(data.id).run();
+    return { ok: true as const };
+  });
 
 const settingsSchema = z.object({
   site_name: z.string().min(1).max(120),

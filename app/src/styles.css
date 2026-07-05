@@ -37,14 +37,20 @@
 @theme {
   --spacing: 0.25rem;
 
-  /* Vype Bar brand tokens (design-brief.md) - generates bg-vb, text-vb,
-     border-vb and font-vb utilities. This website never uses q- tokens. */
-  --color-vb-bg: #0d0c0e;
-  --color-vb-bg-secondary: #17151a;
-  --color-vb-border: #2a262d;
-  --color-vb-text: #f5f2ef;
-  --color-vb-text-secondary: #9a939c;
-  --color-vb-accent: #e2385f;
+  /* Vype Lounge brand tokens (design-brief.md) - generates bg-vb, text-vb,
+     border-vb and font-vb utilities. This website never uses q- tokens.
+     Palette matches the real vype-bar.de site: warm cream background,
+     cocoa-brown primary/accent (#674E42), tan secondary (#BFB0A1) - both
+     colors pulled from the live site's own Wix color palette variables. */
+  --color-vb-bg: #faf6ef;
+  --color-vb-bg-secondary: #f0e6d8;
+  --color-vb-border: #e0d3c2;
+  --color-vb-text: #2b2019;
+  --color-vb-text-secondary: #6b5d50;
+  --color-vb-accent: #674e42;
+  /* Fixed light tone for content placed over the dark hero photo, independent
+     of the page's normal dark-on-cream text tokens. */
+  --color-vb-cream: #f5efe4;
   --font-vb-display: "Outfit", system-ui, sans-serif;
   --font-vb-mono: "IBM Plex Mono", ui-monospace, monospace;
 }

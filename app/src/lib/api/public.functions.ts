@@ -33,6 +33,13 @@ export type PublicMenuData = {
   items: MenuItemRow[];
 };
 
+export type GalleryImage = {
+  id: string;
+  image_url: string;
+  caption: string;
+  sort_order: number;
+};
+
 const DEFAULT_SETTINGS: SiteSettings = {
   site_name: "Vype Lounge",
   tagline: "",
@@ -69,5 +76,17 @@ export const getPublicMenuData = createServerFn({ method: "GET" }).handler(
       categories: categoriesResult.results ?? [],
       items: itemsResult.results ?? [],
     };
+  },
+);
+
+// Public read: the Impressionen gallery photos.
+export const getPublicGallery = createServerFn({ method: "GET" }).handler(
+  async (): Promise<GalleryImage[]> => {
+    const { DB } = bindings();
+    if (!DB) return [];
+    const result = await DB.prepare(
+      "SELECT id, image_url, caption, sort_order FROM gallery_images ORDER BY sort_order ASC",
+    ).all<GalleryImage>();
+    return result.results ?? [];
   },
 );

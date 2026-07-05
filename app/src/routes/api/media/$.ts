@@ -25,7 +25,12 @@ export const Route = createFileRoute("/api/media/$")({
           return new Response("Not found", { status: 404 });
         }
 
-        return new Response(object.body, {
+        // Buffered (not streamed): R2's ReadableStream type and the
+        // Response constructor's expected DOM ReadableStream type don't
+        // line up under @cloudflare/workers-types, and uploads are capped
+        // at 5MB anyway so buffering is cheap.
+        const bytes = await object.arrayBuffer();
+        return new Response(bytes, {
           headers: {
             "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
             "Cache-Control": "public, max-age=31536000, immutable",

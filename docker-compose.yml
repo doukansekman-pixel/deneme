@@ -15,11 +15,26 @@ services:
     expose:
       - "3000"
 
+  app-hype:
+    build:
+      context: ./hype-app
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD: ${HYPE_ADMIN_PASSWORD:?set HYPE_ADMIN_PASSWORD in .env}
+      SESSION_SECRET: ${HYPE_SESSION_SECRET:?set HYPE_SESSION_SECRET in .env}
+      # Same reasoning as `app` above: no domain/TLS yet for this second site.
+      COOKIE_SECURE: "false"
+    volumes:
+      - hype_data:/data
+    expose:
+      - "3000"
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
     ports:
       - "80:80"
+      - "8080:8080"
       # - "443:443"  # uncomment once a domain + Caddyfile TLS block are set up
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
@@ -27,8 +42,10 @@ services:
       - caddy_config:/config
     depends_on:
       - app
+      - app-hype
 
 volumes:
   vype_data:
+  hype_data:
   caddy_data:
   caddy_config:

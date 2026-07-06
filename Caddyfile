@@ -7,3 +7,9 @@
 :80 {
 	reverse_proxy app:3000
 }
+
+# Hype Bar - second site, same pattern, different host port until it gets
+# its own domain (see docker-compose.yml's app-hype service).
+:8080 {
+	reverse_proxy app-hype:3000
+}

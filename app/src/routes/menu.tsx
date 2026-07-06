@@ -102,9 +102,6 @@ function MenuPage() {
         <h1 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text md:text-4xl">
           Karte
         </h1>
-        <p className="mt-3 max-w-xl text-vb-text-secondary">
-          Shisha, Cocktails, Snacks und mehr, alle Preise in Euro.
-        </p>
         <div className="mt-12">
           <MenuList categories={categories} items={items} />
         </div>

@@ -26,22 +26,20 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: [{ find: /^@higgsfield-ai\/icons(\/.*)?$/, replacement: QUANTA_ICONS_SHIM }],
     },
-    // The server bundle runs as a Cloudflare Worker — there is no node_modules
-    // at runtime. Vite's default SSR build leaves npm deps as bare external
-    // imports (h3, react, @tanstack/*, seroval, …), which resolve on a Node
-    // server but throw "No such module" in a Worker. Bundle them all in.
-    // (node: builtins stay external — nodejs_compat provides them.)
+    // The server bundle runs as a plain Node process — node_modules IS
+    // available at runtime, but Vite's default SSR build still leaves npm
+    // deps as bare external imports unless told otherwise. Bundle them all
+    // in so `dist/server/server.js` is close to self-contained.
+    // (node: builtins stay external automatically.)
     ssr: {
       noExternal: true,
-      // `cloudflare:workers` is a workerd runtime built-in that exposes the Worker
-      // env / bindings (D1 `DB`, R2 `STORAGE`). Like node: builtins it must NOT be
-      // bundled; the runtime provides it. (`ssr.external` is typed string[].)
-      external: ["cloudflare:workers"],
+      // better-sqlite3 ships a native .node addon — Rollup can't bundle a
+      // binary, so it must stay a real runtime require() against
+      // node_modules (present in the Docker image alongside dist/).
+      external: ["better-sqlite3"],
     },
     build: {
-      // Keep `cloudflare:*` external in the SSR rollup pass too — `noExternal`
-      // above would otherwise try to resolve+bundle it and fail.
-      rollupOptions: { external: [/^cloudflare:/] },
+      rollupOptions: { external: ["better-sqlite3"] },
     },
     plugins: [
       // Material Symbols SVGs (the app icon set) import as React components via

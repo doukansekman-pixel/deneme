@@ -1,0 +1,9 @@
+# Plain HTTP for now — no domain yet, so Caddy can't provision a TLS cert.
+# Once a domain is decided: replace ":80" with the domain name (e.g.
+# "vype-lounge.example.com") and Caddy automatically obtains + renews a
+# Let's Encrypt certificate; also drop COOKIE_SECURE=false from
+# docker-compose.yml at that point so the admin session cookie goes back to
+# requiring HTTPS.
+:80 {
+	reverse_proxy app:3000
+}

@@ -1,0 +1,34 @@
+services:
+  app:
+    build:
+      context: ./app
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      # No domain/TLS yet (see Caddyfile) — relax the session cookie's
+      # Secure flag so admin login works over plain HTTP. Remove this once
+      # HTTPS is in place.
+      COOKIE_SECURE: "false"
+    volumes:
+      - vype_data:/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # - "443:443"  # uncomment once a domain + Caddyfile TLS block are set up
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  vype_data:
+  caddy_data:
+  caddy_config:

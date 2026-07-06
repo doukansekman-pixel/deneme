@@ -102,10 +102,18 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
   return timingSafeEqual(expected, actual);
 }
 
+// `Secure` makes browsers drop the cookie over plain HTTP, which this app is
+// served over until a domain + TLS (Caddy) are in place. Default to Secure
+// and only relax it via explicit opt-out (COOKIE_SECURE=false) for that
+// interim HTTP-only deployment window.
+function secureCookieAttr(): string {
+  return process.env.COOKIE_SECURE === "false" ? "" : "Secure; ";
+}
+
 export function buildSessionCookie(token: string): string {
-  return `${SESSION_COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_TTL_SECONDS}`;
+  return `${SESSION_COOKIE_NAME}=${token}; Path=/; HttpOnly; ${secureCookieAttr()}SameSite=Strict; Max-Age=${SESSION_TTL_SECONDS}`;
 }
 
 export function buildClearSessionCookie(): string {
-  return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+  return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${secureCookieAttr()}SameSite=Strict; Max-Age=0`;
 }

@@ -6,7 +6,17 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 // first time they enter the viewport. Not scroll-scrubbed like the hero -
 // a one-shot settle, then done. Reduced-motion users get the resting state
 // immediately, no observer attached.
-export function Reveal3D({ children, className }: { children: ReactNode; className?: string }) {
+export function Reveal3D({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  // Stagger in ms, for grids where every item should settle in sequence
+  // rather than all at once (e.g. AtmosphereBand's three columns).
+  delay?: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -37,6 +47,7 @@ export function Reveal3D({ children, className }: { children: ReactNode; classNa
         style={{
           transform: visible ? "translateY(0) rotateX(0deg) scale(1)" : "translateY(28px) rotateX(8deg) scale(0.98)",
           opacity: visible ? 1 : 0,
+          transitionDelay: visible && delay ? `${delay}ms` : "0ms",
         }}
       >
         {children}

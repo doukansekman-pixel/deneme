@@ -6,6 +6,7 @@ import { TiltImage } from "../components/TiltImage";
 import { Reveal3D } from "../components/Reveal3D";
 import { MenuCta } from "../components/MenuCta";
 import { SiteFooter } from "../components/SiteFooter";
+import { AmbientGlow } from "../components/AmbientGlow";
 import { getPublicMenuData } from "../lib/api/public.functions";
 
 export const Route = createFileRoute("/")({
@@ -81,7 +82,8 @@ function Nav({
 function About({ aboutText }: { aboutText: string }) {
   if (!aboutText) return null;
   return (
-    <section className="mx-auto max-w-3xl px-6 py-24">
+    <section className="relative isolate mx-auto max-w-3xl px-6 py-24">
+      <AmbientGlow />
       <p className="font-vb-display text-2xl leading-relaxed tracking-tight text-vb-text md:text-3xl">
         {aboutText}
       </p>
@@ -121,7 +123,7 @@ function FeatureSplit({
   );
 
   const copy = (
-    <Reveal3D className={imageSide === "left" ? "md:order-2" : "md:order-1"}>
+    <Reveal3D delay={120} className={imageSide === "left" ? "md:order-2" : "md:order-1"}>
       <div className="flex h-full flex-col justify-center">
         <h3 className="font-vb-mono text-xs uppercase tracking-[0.2em] text-vb-accent">{eyebrow}</h3>
         <h2 className="mt-4 font-vb-display text-2xl font-semibold tracking-tight text-vb-text md:text-3xl">
@@ -152,32 +154,37 @@ function FeatureSplit({
 // from our own photos rather than copied wholesale. Dark text here since
 // the accent token itself is a light gold (reads as text/hover elsewhere
 // on the dark body, and as this band's fill).
-function AtmosphereBand() {
+function AtmosphereBand({
+  heading,
+  body,
+  image1,
+  image2,
+}: {
+  heading: string;
+  body: string;
+  image1: string;
+  image2: string;
+}) {
   return (
     <section className="bg-vb-accent py-20 text-vb-bg">
       <div className="mx-auto grid max-w-5xl items-center gap-8 px-6 md:grid-cols-[1fr_1.1fr_1fr]">
-        <Reveal3D>
+        <Reveal3D delay={0}>
           <TiltImage
-            src="/assets/gallery-shisha-prep.jpg"
+            src={image1}
             alt="Shisha wird vorbereitet"
             loading="lazy"
             className="aspect-[3/4] w-full rounded-md object-cover"
           />
         </Reveal3D>
-        <Reveal3D>
+        <Reveal3D delay={120}>
           <div className="rounded-md bg-vb-bg/10 px-8 py-10 text-center">
-            <h2 className="font-vb-display text-2xl font-semibold tracking-tight md:text-3xl">
-              Wohlfühl-Lounge in Weiterstadt
-            </h2>
-            <p className="mx-auto mt-4 max-w-xs text-vb-bg/75">
-              Ob mit Freunden nach der Arbeit oder für einen ruhigen Abend zu zweit, in der Vype
-              Lounge kommt man an und bleibt gerne.
-            </p>
+            <h2 className="font-vb-display text-2xl font-semibold tracking-tight md:text-3xl">{heading}</h2>
+            <p className="mx-auto mt-4 max-w-xs text-vb-bg/75">{body}</p>
           </div>
         </Reveal3D>
-        <Reveal3D>
+        <Reveal3D delay={240}>
           <TiltImage
-            src="/assets/gallery-interior-2.jpg"
+            src={image2}
             alt="Lounge-Bereich der Vype Lounge"
             loading="lazy"
             className="aspect-[3/4] w-full rounded-md object-cover"
@@ -190,16 +197,19 @@ function AtmosphereBand() {
 
 function MenuTeaser() {
   return (
-    <Reveal3D className="mx-auto max-w-3xl px-6 py-24 text-center">
-      <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">Karte</h2>
-      <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">
-        Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer
-        Karte.
-      </p>
-      <div className="mt-6 flex justify-center">
-        <MenuCta href="/menu">Zur Karte</MenuCta>
-      </div>
-    </Reveal3D>
+    <section className="relative isolate">
+      <AmbientGlow variant="warm" />
+      <Reveal3D className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">Karte</h2>
+        <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">
+          Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer
+          Karte.
+        </p>
+        <div className="mt-6 flex justify-center">
+          <MenuCta href="/menu">Zur Karte</MenuCta>
+        </div>
+      </Reveal3D>
+    </section>
   );
 }
 
@@ -216,7 +226,8 @@ function Visit({
 }) {
   const hasWifi = wifiSsid.length > 0;
   return (
-    <section id="visit" className="border-t border-vb-border">
+    <section id="visit" className="relative isolate border-t border-vb-border">
+      <AmbientGlow />
       <div className="mx-auto grid max-w-5xl gap-10 px-6 py-20 md:grid-cols-2">
         <div>
           <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
@@ -281,29 +292,35 @@ function Index() {
       <StructuredData json={schema} />
       <Nav siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
       <ScrollDepthHero
-        imageSrc="/assets/hero-lounge.jpg"
+        imageSrc={settings.hero_image_url || "/assets/hero-lounge.jpg"}
         imageAlt="Blick in die Vype Lounge: hängende Pflanzen, warmes Licht und die Marmorbar"
         tagline={settings.tagline || settings.site_name}
+        subtitle={settings.hero_subtitle}
       />
       <About aboutText={settings.about_text} />
       <FeatureSplit
-        imageSrc="/assets/menu-item-drinks.jpg"
-        imageAlt="Cocktail der Vype Lounge"
+        imageSrc={settings.feature1_image_url}
+        imageAlt={settings.feature1_heading}
         imageSide="right"
-        eyebrow="Cocktails"
-        heading="Der passende Begleiter zu jeder Shisha"
-        body="Fruchtige Mocktails, klassische Softdrinks und alles dazwischen, jeden Nachmittag ab Öffnung frisch gemixt."
+        eyebrow={settings.feature1_eyebrow}
+        heading={settings.feature1_heading}
+        body={settings.feature1_body}
       />
       <FeatureSplit
-        imageSrc="/assets/gallery-interior-1.jpg"
-        imageAlt="Lounge-Bereich mit hängenden Pflanzen"
+        imageSrc={settings.feature2_image_url}
+        imageAlt={settings.feature2_heading}
         imageSide="left"
-        eyebrow="Ambiente"
-        heading="Entspannte Atmosphäre"
-        body="Sanftes Licht, ruhige Musik und Sitzecken, in denen man gerne länger bleibt. Aus einem kurzen Besuch wird bei uns schnell ein langer Abend."
+        eyebrow={settings.feature2_eyebrow}
+        heading={settings.feature2_heading}
+        body={settings.feature2_body}
         cta={{ label: "Impressionen ansehen", href: "/impressionen" }}
       />
-      <AtmosphereBand />
+      <AtmosphereBand
+        heading={settings.atmosphere_heading}
+        body={settings.atmosphere_body}
+        image1={settings.atmosphere_image1_url}
+        image2={settings.atmosphere_image2_url}
+      />
       <MenuTeaser />
       <Visit
         address={settings.address}

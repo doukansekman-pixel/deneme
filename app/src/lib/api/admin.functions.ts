@@ -104,6 +104,20 @@ const settingsSchema = z.object({
   wifi_password: z.string().max(100),
   datenschutz_text: z.string().max(30000),
   logo_url: settingsImageUrlSchema,
+  hero_image_url: settingsImageUrlSchema,
+  hero_subtitle: z.string().max(200),
+  feature1_eyebrow: z.string().max(60),
+  feature1_heading: z.string().max(150),
+  feature1_body: z.string().max(500),
+  feature1_image_url: settingsImageUrlSchema,
+  feature2_eyebrow: z.string().max(60),
+  feature2_heading: z.string().max(150),
+  feature2_body: z.string().max(500),
+  feature2_image_url: settingsImageUrlSchema,
+  atmosphere_heading: z.string().max(150),
+  atmosphere_body: z.string().max(500),
+  atmosphere_image1_url: settingsImageUrlSchema,
+  atmosphere_image2_url: settingsImageUrlSchema,
 });
 
 export const adminUpdateSettings = createServerFn({ method: "POST" })
@@ -114,7 +128,12 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
     if (!DB) throw new Error("db_unavailable");
     await DB.prepare(
       `UPDATE site_settings SET site_name = ?, tagline = ?, about_text = ?, address = ?, hours = ?,
-       instagram_url = ?, wifi_ssid = ?, wifi_password = ?, datenschutz_text = ?, logo_url = ?, updated_at = datetime('now') WHERE id = 1`,
+       instagram_url = ?, wifi_ssid = ?, wifi_password = ?, datenschutz_text = ?, logo_url = ?,
+       hero_image_url = ?, hero_subtitle = ?,
+       feature1_eyebrow = ?, feature1_heading = ?, feature1_body = ?, feature1_image_url = ?,
+       feature2_eyebrow = ?, feature2_heading = ?, feature2_body = ?, feature2_image_url = ?,
+       atmosphere_heading = ?, atmosphere_body = ?, atmosphere_image1_url = ?, atmosphere_image2_url = ?,
+       updated_at = datetime('now') WHERE id = 1`,
     )
       .bind(
         data.site_name,
@@ -127,6 +146,20 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
         data.wifi_password,
         data.datenschutz_text,
         data.logo_url,
+        data.hero_image_url,
+        data.hero_subtitle,
+        data.feature1_eyebrow,
+        data.feature1_heading,
+        data.feature1_body,
+        data.feature1_image_url,
+        data.feature2_eyebrow,
+        data.feature2_heading,
+        data.feature2_body,
+        data.feature2_image_url,
+        data.atmosphere_heading,
+        data.atmosphere_body,
+        data.atmosphere_image1_url,
+        data.atmosphere_image2_url,
       )
       .run();
     return { ok: true as const };

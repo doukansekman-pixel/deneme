@@ -149,3 +149,15 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Slow ambient drift for the blurred background glows (AmbientGlow) - never
+   settles, just breathes, so dark sections don't read as static/flat. */
+@keyframes vb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -5%, 0) scale(1.1);
+  }
+}

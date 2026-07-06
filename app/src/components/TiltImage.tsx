@@ -4,6 +4,13 @@ import { useRef, type PointerEvent } from "react";
 // thumbnails) - the site's "more 3D" pass. Pure CSS transform + a pointer
 // listener, no WebGL/3D asset/library. Reduced-motion users get the flat
 // image (no listener attached, no initial transform to un-set).
+//
+// Two extra depth cues beyond the tilt itself, both purely decorative
+// (aria-hidden) and inert until hover: a blurred accent-colored glow plate
+// sitting behind the frame (the photo reads as floating above the page
+// rather than printed on it), and a soft gloss sheen that tracks the same
+// pointer position across the image (a glassy highlight, reinforcing the
+// tilt as a physical surface catching light).
 export function TiltImage({
   src,
   alt,
@@ -16,6 +23,7 @@ export function TiltImage({
   loading?: "lazy" | "eager";
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const sheenRef = useRef<HTMLDivElement>(null);
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     if (event.pointerType !== "mouse") return;
@@ -26,22 +34,41 @@ export function TiltImage({
     const px = (event.clientX - rect.left) / rect.width - 0.5;
     const py = (event.clientY - rect.top) / rect.height - 0.5;
     node.style.transform = `perspective(700px) rotateX(${(-py * 10).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg) scale3d(1.03, 1.03, 1.03)`;
+    if (sheenRef.current) {
+      sheenRef.current.style.opacity = "0.4";
+      sheenRef.current.style.backgroundPosition = `${(px + 0.5) * 100}% ${(py + 0.5) * 100}%`;
+    }
   }
 
   function onPointerLeave() {
     const node = ref.current;
-    if (!node) return;
-    node.style.transform = "perspective(700px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+    if (node) node.style.transform = "perspective(700px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+    if (sheenRef.current) sheenRef.current.style.opacity = "0";
   }
 
   return (
-    <div
-      ref={ref}
-      onPointerMove={onPointerMove}
-      onPointerLeave={onPointerLeave}
-      className="transition-transform duration-200 ease-out will-change-transform"
-    >
-      <img src={src} alt={alt} loading={loading} className={className} />
+    <div className="group relative">
+      <div
+        aria-hidden
+        className="absolute -inset-3 -z-10 rounded-lg bg-gradient-to-br from-vb-accent/30 via-vb-accent/10 to-transparent opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <div
+        ref={ref}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        className="relative overflow-hidden rounded-md shadow-[0_18px_40px_-20px_rgba(0,0,0,0.6)] transition-transform duration-200 ease-out will-change-transform"
+      >
+        <img src={src} alt={alt} loading={loading} className={className} />
+        <div
+          ref={sheenRef}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, rgba(245,239,228,0.28), transparent 60%)",
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -41,10 +41,25 @@ const EMPTY_SETTINGS: SiteSettings = {
   wifi_password: "",
   datenschutz_text: "",
   logo_url: "",
+  hero_image_url: "",
+  hero_subtitle: "",
+  feature1_eyebrow: "",
+  feature1_heading: "",
+  feature1_body: "",
+  feature1_image_url: "",
+  feature2_eyebrow: "",
+  feature2_heading: "",
+  feature2_body: "",
+  feature2_image_url: "",
+  atmosphere_heading: "",
+  atmosphere_body: "",
+  atmosphere_image1_url: "",
+  atmosphere_image2_url: "",
 };
 
 const TABS = [
   { id: "settings", label: "Ayarlar" },
+  { id: "homepage", label: "Anasayfa" },
   { id: "menu", label: "Menü" },
   { id: "gallery", label: "Galeri" },
 ] as const;
@@ -55,6 +70,10 @@ function AdminDashboard() {
   const router = useRouter();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("settings");
+  // Lifted up (not local to each form) so switching between "Ayarlar" and
+  // "Anasayfa" never loses unsaved edits, and both tabs save through the
+  // same adminUpdateSettings call - the backend always writes the full row.
+  const [settings, setSettings] = useState<SiteSettings>(data.settings ?? EMPTY_SETTINGS);
 
   async function onAuthError(error: unknown) {
     if (error instanceof Error && error.message.includes("unauthorized")) {
@@ -102,7 +121,16 @@ function AdminDashboard() {
       <main className="mx-auto max-w-3xl px-6 py-12">
         {tab === "settings" ? (
           <SettingsForm
-            initial={data.settings ?? EMPTY_SETTINGS}
+            settings={settings}
+            setSettings={setSettings}
+            onAuthError={onAuthError}
+            onSaved={() => router.invalidate()}
+          />
+        ) : null}
+        {tab === "homepage" ? (
+          <HomepageContentForm
+            settings={settings}
+            setSettings={setSettings}
             onAuthError={onAuthError}
             onSaved={() => router.invalidate()}
           />
@@ -153,15 +181,18 @@ const inputClass =
   "w-full border border-vb-border bg-vb-bg-secondary px-3 py-2 text-sm text-vb-text outline-none focus:border-vb-accent";
 
 function SettingsForm({
-  initial,
+  settings,
+  setSettings,
   onAuthError,
   onSaved,
 }: {
-  initial: SiteSettings;
+  settings: SiteSettings;
+  setSettings: (settings: SiteSettings) => void;
   onAuthError: (error: unknown) => Promise<boolean>;
   onSaved: () => void;
 }) {
-  const [form, setForm] = useState(initial);
+  const form = settings;
+  const setForm = setSettings;
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [uploading, setUploading] = useState(false);
 
@@ -192,7 +223,11 @@ function SettingsForm({
 
   return (
     <section>
-      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Site Ayarları</h2>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">İletişim ve Site Ayarları</h2>
+      <p className="mt-2 text-sm text-vb-text-secondary">
+        Mekan bilgileri, iletişim ve gizlilik metni. Anasayfadaki fotoğraf/başlık bölümleri için
+        "Anasayfa" sekmesine bakın.
+      </p>
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <div className="md:col-span-2">
           <Field label="Logo">
@@ -304,6 +339,215 @@ function SettingsForm({
         {status === "error" ? <span className="text-sm text-vb-accent">Kaydedilemedi, tekrar deneyin.</span> : null}
       </div>
     </section>
+  );
+}
+
+// Homepage editorial content: hero image/subtitle + the two photo-and-claim
+// blocks + the gold atmosphere band. Split into its own tab (rather than
+// folded into "Ayarlar") so the owner isn't scanning one long form mixing
+// contact info with page copy - each tab has one clear job.
+function HomepageContentForm({
+  settings,
+  setSettings,
+  onAuthError,
+  onSaved,
+}: {
+  settings: SiteSettings;
+  setSettings: (settings: SiteSettings) => void;
+  onAuthError: (error: unknown) => Promise<boolean>;
+  onSaved: () => void;
+}) {
+  const form = settings;
+  const setForm = setSettings;
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  async function save() {
+    setStatus("saving");
+    try {
+      await adminUpdateSettings({ data: form });
+      setStatus("saved");
+      onSaved();
+    } catch (error) {
+      if (await onAuthError(error)) return;
+      setStatus("error");
+    }
+  }
+
+  async function onImageFileSelected(field: keyof SiteSettings, file: File | undefined) {
+    if (!file) return;
+    setUploadingField(field);
+    try {
+      const url = await uploadAdminImage(file);
+      setForm({ ...form, [field]: url });
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploadingField(null);
+    }
+  }
+
+  function ImageField({
+    label,
+    field,
+  }: {
+    label: string;
+    field: keyof SiteSettings;
+  }) {
+    const value = form[field] as string;
+    return (
+      <Field label={label}>
+        <div className="flex flex-wrap items-center gap-3">
+          {value ? <img src={value} alt="" className="h-12 w-16 rounded object-cover" /> : null}
+          <input
+            className={inputClass}
+            placeholder="Görsel URL"
+            value={value}
+            onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+          />
+          <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
+            {uploadingField === field ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploadingField !== null}
+              onChange={(e) => onImageFileSelected(field, e.target.files?.[0])}
+            />
+          </label>
+        </div>
+      </Field>
+    );
+  }
+
+  return (
+    <div className="space-y-14">
+      <section>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Üst Görsel (Hero)</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">
+          Anasayfayı açan büyük fotoğraf ve altındaki kısa açıklama cümlesi. Başlık (büyük yazı) "Ayarlar"
+          sekmesindeki Slogan alanından geliyor.
+        </p>
+        <div className="mt-6 grid gap-5">
+          <ImageField label="Görsel" field="hero_image_url" />
+          <Field label="Alt Yazı">
+            <input
+              className={inputClass}
+              value={form.hero_subtitle}
+              onChange={(e) => setForm({ ...form, hero_subtitle: e.target.value })}
+            />
+          </Field>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bölüm 1 (Kokteyller)</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">Fotoğrafın yanında görünen ilk metin bloğu.</p>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <ImageField label="Görsel" field="feature1_image_url" />
+          </div>
+          <Field label="Üst Etiket">
+            <input
+              className={inputClass}
+              value={form.feature1_eyebrow}
+              onChange={(e) => setForm({ ...form, feature1_eyebrow: e.target.value })}
+            />
+          </Field>
+          <Field label="Başlık">
+            <input
+              className={inputClass}
+              value={form.feature1_heading}
+              onChange={(e) => setForm({ ...form, feature1_heading: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Metin">
+              <textarea
+                rows={3}
+                className={inputClass}
+                value={form.feature1_body}
+                onChange={(e) => setForm({ ...form, feature1_body: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bölüm 2 (Ambiyans)</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">İkinci fotoğraf + metin bloğu.</p>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <ImageField label="Görsel" field="feature2_image_url" />
+          </div>
+          <Field label="Üst Etiket">
+            <input
+              className={inputClass}
+              value={form.feature2_eyebrow}
+              onChange={(e) => setForm({ ...form, feature2_eyebrow: e.target.value })}
+            />
+          </Field>
+          <Field label="Başlık">
+            <input
+              className={inputClass}
+              value={form.feature2_heading}
+              onChange={(e) => setForm({ ...form, feature2_heading: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Metin">
+              <textarea
+                rows={3}
+                className={inputClass}
+                value={form.feature2_body}
+                onChange={(e) => setForm({ ...form, feature2_body: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Altın Bant</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">
+          Sayfanın ortasındaki iki fotoğraflı, ortada yazılı bölüm.
+        </p>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <ImageField label="Sol Görsel" field="atmosphere_image1_url" />
+          <ImageField label="Sağ Görsel" field="atmosphere_image2_url" />
+          <Field label="Başlık">
+            <input
+              className={inputClass}
+              value={form.atmosphere_heading}
+              onChange={(e) => setForm({ ...form, atmosphere_heading: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Metin">
+              <textarea
+                rows={3}
+                className={inputClass}
+                value={form.atmosphere_body}
+                onChange={(e) => setForm({ ...form, atmosphere_body: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
+      </section>
+
+      <div className="flex items-center gap-4">
+        <button
+          onClick={save}
+          disabled={status === "saving"}
+          className="border border-vb-text px-5 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
+        >
+          {status === "saving" ? "Kaydediliyor…" : "Kaydet"}
+        </button>
+        {status === "saved" ? <span className="text-sm text-vb-text-secondary">Kaydedildi.</span> : null}
+        {status === "error" ? <span className="text-sm text-vb-accent">Kaydedilemedi, tekrar deneyin.</span> : null}
+      </div>
+    </div>
   );
 }
 

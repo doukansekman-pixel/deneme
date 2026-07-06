@@ -13,6 +13,22 @@ export type SiteSettings = {
   wifi_password: string;
   datenschutz_text: string;
   logo_url: string;
+  // Homepage content (hero + the two feature blocks + the atmosphere band) -
+  // admin-editable so the owner never needs a code change to update it.
+  hero_image_url: string;
+  hero_subtitle: string;
+  feature1_eyebrow: string;
+  feature1_heading: string;
+  feature1_body: string;
+  feature1_image_url: string;
+  feature2_eyebrow: string;
+  feature2_heading: string;
+  feature2_body: string;
+  feature2_image_url: string;
+  atmosphere_heading: string;
+  atmosphere_body: string;
+  atmosphere_image1_url: string;
+  atmosphere_image2_url: string;
 };
 
 export type MenuCategory = { id: string; name: string; sort_order: number };
@@ -52,6 +68,23 @@ const DEFAULT_SETTINGS: SiteSettings = {
   wifi_password: "",
   datenschutz_text: "",
   logo_url: "",
+  hero_image_url: "/assets/hero-lounge.jpg",
+  hero_subtitle: "Shisha, Cocktails und die richtige Musik, jeden Tag ab dem Nachmittag.",
+  feature1_eyebrow: "Cocktails",
+  feature1_heading: "Der passende Begleiter zu jeder Shisha",
+  feature1_body:
+    "Fruchtige Mocktails, klassische Softdrinks und alles dazwischen, jeden Nachmittag ab Öffnung frisch gemixt.",
+  feature1_image_url: "/assets/menu-item-drinks.jpg",
+  feature2_eyebrow: "Ambiente",
+  feature2_heading: "Entspannte Atmosphäre",
+  feature2_body:
+    "Sanftes Licht, ruhige Musik und Sitzecken, in denen man gerne länger bleibt. Aus einem kurzen Besuch wird bei uns schnell ein langer Abend.",
+  feature2_image_url: "/assets/gallery-interior-1.jpg",
+  atmosphere_heading: "Wohlfühl-Lounge in Weiterstadt",
+  atmosphere_body:
+    "Ob mit Freunden nach der Arbeit oder für einen ruhigen Abend zu zweit, in der Vype Lounge kommt man an und bleibt gerne.",
+  atmosphere_image1_url: "/assets/gallery-shisha-prep.jpg",
+  atmosphere_image2_url: "/assets/gallery-interior-2.jpg",
 };
 
 // Public read: the live menu + settings for the homepage. No auth — this is

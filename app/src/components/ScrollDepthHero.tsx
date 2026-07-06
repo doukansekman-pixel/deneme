@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type PointerEvent } from "react";
 
 import { MenuCta } from "./MenuCta";
 
@@ -7,16 +7,23 @@ import { MenuCta } from "./MenuCta";
 // card settling into place, instead of a static image or a passive loop.
 // Scroll-linked, never opacity-gated (screenshot-safe): the frame is fully
 // painted at scroll 0 and the transform is the only thing that moves.
+//
+// A pointer-tracked spotlight sits on top of that base effect (mouse only,
+// desktop) - a soft highlight that follows the cursor across the photo,
+// independent of the scroll transform.
 export function ScrollDepthHero({
   imageSrc,
   imageAlt,
   tagline,
+  subtitle,
 }: {
   imageSrc: string;
   imageAlt: string;
   tagline: string;
+  subtitle: string;
 }) {
   const frameRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -46,11 +53,28 @@ export function ScrollDepthHero({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  function onPointerMove(event: PointerEvent<HTMLElement>) {
+    if (event.pointerType !== "mouse") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const node = spotlightRef.current;
+    if (!node) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    node.style.background = `radial-gradient(480px circle at ${x}% ${y}%, rgba(245,239,228,0.16), transparent 60%)`;
+  }
+
+  function onPointerLeave() {
+    if (spotlightRef.current) spotlightRef.current.style.background = "transparent";
+  }
+
   return (
     <section
       id="top"
       className="relative flex min-h-[85dvh] items-end overflow-hidden"
       style={{ perspective: "1200px" }}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
     >
       <div
         ref={frameRef}
@@ -72,13 +96,13 @@ export function ScrollDepthHero({
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(191,176,161,0.25),_transparent_60%)]"
         />
       </div>
+      <div ref={spotlightRef} aria-hidden className="absolute inset-0 transition-[background] duration-300" />
+
       <div className="relative mx-auto w-full max-w-5xl px-6 pb-16 pt-40 motion-safe:animate-[vb-fade-up_0.8s_ease-out]">
         <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-cream md:text-6xl">
           {tagline}
         </h1>
-        <p className="mt-5 max-w-md text-base leading-relaxed text-vb-cream/80">
-          Shisha, Cocktails und die richtige Musik, jeden Tag ab dem Nachmittag.
-        </p>
+        <p className="mt-5 max-w-md text-base leading-relaxed text-vb-cream/80">{subtitle}</p>
         <div className="mt-8">
           <MenuCta href="/menu" tone="light">Zur Karte</MenuCta>
         </div>

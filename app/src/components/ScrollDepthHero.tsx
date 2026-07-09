@@ -1,5 +1,6 @@
 import { useEffect, useRef, type PointerEvent } from "react";
 
+import { AutoplayVideo } from "./AutoplayVideo";
 import { MenuCta } from "./MenuCta";
 import { SmokeLayer } from "./SmokeLayer";
 
@@ -91,15 +92,7 @@ export function ScrollDepthHero({
         style={{ transformStyle: "preserve-3d", willChange: "transform" }}
       >
         {isVideoSrc(imageSrc) ? (
-          <video
-            src={imageSrc}
-            className="h-full w-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-label={imageAlt}
-          />
+          <AutoplayVideo src={imageSrc} className="h-full w-full object-cover" ariaLabel={imageAlt} />
         ) : (
           <img
             src={imageSrc}

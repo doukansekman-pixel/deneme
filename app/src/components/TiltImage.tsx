@@ -1,5 +1,7 @@
 import { useRef, type PointerEvent } from "react";
 
+import { AutoplayVideo } from "./AutoplayVideo";
+
 // Lightweight pointer-tracked 3D tilt for photo grids (gallery, menu item
 // thumbnails) - the site's "more 3D" pass. Pure CSS transform + a pointer
 // listener, no WebGL/3D asset/library. Reduced-motion users get the flat
@@ -68,15 +70,7 @@ export function TiltImage({
         className="relative overflow-hidden rounded-md shadow-[0_18px_40px_-20px_rgba(0,0,0,0.6)] transition-transform duration-200 ease-out will-change-transform"
       >
         {isVideoSrc(src) ? (
-          <video
-            src={src}
-            className={className}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-label={alt}
-          />
+          <AutoplayVideo src={src} className={className} ariaLabel={alt} />
         ) : (
           <img src={src} alt={alt} loading={loading} className={className} />
         )}

@@ -1,10 +1,14 @@
 import { useEffect, useRef } from "react";
 
-// React's `muted` JSX prop doesn't reliably sync to the DOM property before
-// the browser's autoplay check runs, so autoplay silently fails and shows
-// the blocked-play icon even though the attribute is present in markup.
-// Setting `.muted` imperatively via ref (and re-triggering `.play()`) is the
-// standard workaround.
+// Safari (WebKit) is stricter than Chrome about when a muted <video> is
+// actually allowed to autoplay: React's `muted` JSX prop alone isn't
+// enough, and a single `.play()` call right on mount can lose the race
+// against WebKit's own readiness checks. This retries `.play()` on the
+// media's own "ready" events too (canplay/loadeddata), and again once the
+// element scrolls into view, which covers the cases a single early call
+// misses. `disablePictureInPicture` and `webkit-playsinline` are the
+// legacy Safari/iOS equivalents of the modern attributes, added for older
+// WebKit builds that only recognize the prefixed/lowercase forms.
 export function AutoplayVideo({
   src,
   className,
@@ -19,8 +23,31 @@ export function AutoplayVideo({
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+
     node.muted = true;
-    node.play().catch(() => {});
+    node.defaultMuted = true;
+
+    function tryPlay() {
+      node?.play().catch(() => {});
+    }
+
+    tryPlay();
+    node.addEventListener("loadeddata", tryPlay);
+    node.addEventListener("canplay", tryPlay);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) tryPlay();
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(node);
+
+    return () => {
+      node.removeEventListener("loadeddata", tryPlay);
+      node.removeEventListener("canplay", tryPlay);
+      observer.disconnect();
+    };
   }, [src]);
 
   return (
@@ -32,6 +59,9 @@ export function AutoplayVideo({
       muted
       loop
       playsInline
+      preload="auto"
+      disablePictureInPicture
+      webkit-playsinline="true"
       aria-label={ariaLabel}
     />
   );

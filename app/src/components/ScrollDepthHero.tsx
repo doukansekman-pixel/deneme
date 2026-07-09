@@ -2,7 +2,6 @@ import { useEffect, useRef, type PointerEvent } from "react";
 
 import { AutoplayVideo } from "./AutoplayVideo";
 import { MenuCta } from "./MenuCta";
-import { SmokeLayer } from "./SmokeLayer";
 
 // AI-animated depth footage (real photo, subtle camera motion) plays here
 // instead of a static <img> when the admin-set hero image URL points to a
@@ -111,7 +110,6 @@ export function ScrollDepthHero({
         />
       </div>
       <div ref={spotlightRef} aria-hidden className="absolute inset-0 transition-[background] duration-300" />
-      <SmokeLayer />
 
       <div className="relative mx-auto w-full max-w-5xl px-6 pb-16 pt-40 motion-safe:animate-[vb-fade-up_0.8s_ease-out]">
         <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-cream md:text-6xl">

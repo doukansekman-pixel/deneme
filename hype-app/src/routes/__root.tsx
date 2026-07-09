@@ -75,7 +75,7 @@ function buildHead(meta: AppMeta) {
       { title },
       { name: "description", content: description },
       { name: "author", content: "Hype Bar" },
-      { name: "theme-color", content: "#211a16" },
+      { name: "theme-color", content: "#202a24" },
       { name: "robots", content: "index, follow, max-image-preview:large" },
       { property: "og:title", content: title },
       { property: "og:description", content: description },

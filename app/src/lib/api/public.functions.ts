@@ -29,6 +29,11 @@ export type SiteSettings = {
   atmosphere_body: string;
   atmosphere_image1_url: string;
   atmosphere_image2_url: string;
+  menu_teaser_heading: string;
+  menu_teaser_body: string;
+  menu_teaser_cta_label: string;
+  visit_heading: string;
+  feature2_cta_label: string;
 };
 
 export type MenuCategory = { id: string; name: string; sort_order: number };
@@ -85,6 +90,12 @@ const DEFAULT_SETTINGS: SiteSettings = {
     "Ob mit Freunden nach der Arbeit oder für einen ruhigen Abend zu zweit, in der Vype Lounge kommt man an und bleibt gerne.",
   atmosphere_image1_url: "/assets/gallery-shisha-prep.jpg",
   atmosphere_image2_url: "/assets/gallery-interior-2.jpg",
+  menu_teaser_heading: "Karte",
+  menu_teaser_body:
+    "Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer Karte.",
+  menu_teaser_cta_label: "Zur Karte",
+  visit_heading: "Besuch uns",
+  feature2_cta_label: "Impressionen ansehen",
 };
 
 // Public read: the live menu + settings for the homepage. No auth — this is

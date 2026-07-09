@@ -195,18 +195,23 @@ function AtmosphereBand({
   );
 }
 
-function MenuTeaser() {
+function MenuTeaser({
+  heading,
+  body,
+  ctaLabel,
+}: {
+  heading: string;
+  body: string;
+  ctaLabel: string;
+}) {
   return (
     <section className="relative isolate">
       <AmbientGlow variant="warm" />
       <Reveal3D className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">Karte</h2>
-        <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">
-          Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer
-          Karte.
-        </p>
+        <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">{heading}</h2>
+        <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">{body}</p>
         <div className="mt-6 flex justify-center">
-          <MenuCta href="/menu">Zur Karte</MenuCta>
+          <MenuCta href="/menu">{ctaLabel}</MenuCta>
         </div>
       </Reveal3D>
     </section>
@@ -214,11 +219,13 @@ function MenuTeaser() {
 }
 
 function Visit({
+  heading,
   address,
   hours,
   wifiSsid,
   wifiPassword,
 }: {
+  heading: string;
   address: string;
   hours: string;
   wifiSsid: string;
@@ -231,7 +238,7 @@ function Visit({
       <div className="mx-auto grid max-w-5xl gap-10 px-6 py-20 md:grid-cols-2">
         <div>
           <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
-            Besuch uns
+            {heading}
           </h2>
           {address ? <p className="mt-4 text-vb-text-secondary">{address}</p> : null}
           {hours ? <p className="mt-1 font-vb-mono text-sm text-vb-text-secondary">{hours}</p> : null}
@@ -313,7 +320,7 @@ function Index() {
         eyebrow={settings.feature2_eyebrow}
         heading={settings.feature2_heading}
         body={settings.feature2_body}
-        cta={{ label: "Impressionen ansehen", href: "/impressionen" }}
+        cta={{ label: settings.feature2_cta_label, href: "/impressionen" }}
       />
       <AtmosphereBand
         heading={settings.atmosphere_heading}
@@ -321,8 +328,13 @@ function Index() {
         image1={settings.atmosphere_image1_url}
         image2={settings.atmosphere_image2_url}
       />
-      <MenuTeaser />
+      <MenuTeaser
+        heading={settings.menu_teaser_heading}
+        body={settings.menu_teaser_body}
+        ctaLabel={settings.menu_teaser_cta_label}
+      />
       <Visit
+        heading={settings.visit_heading}
         address={settings.address}
         hours={settings.hours}
         wifiSsid={settings.wifi_ssid}

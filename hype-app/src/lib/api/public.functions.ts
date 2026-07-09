@@ -29,6 +29,11 @@ export type SiteSettings = {
   atmosphere_body: string;
   atmosphere_image1_url: string;
   atmosphere_image2_url: string;
+  menu_teaser_heading: string;
+  menu_teaser_body: string;
+  menu_teaser_cta_label: string;
+  visit_heading: string;
+  feature2_cta_label: string;
 };
 
 export type MenuCategory = { id: string; name: string; sort_order: number };
@@ -85,6 +90,12 @@ const DEFAULT_SETTINGS: SiteSettings = {
     "Shisha und Cocktail schon ab 18 Uhr für 13 Euro, jeden Freitag in der Hype Bar.",
   atmosphere_image1_url: "/assets/atmosphere1-hype.jpg",
   atmosphere_image2_url: "/assets/atmosphere2-hype.jpg",
+  menu_teaser_heading: "Karte",
+  menu_teaser_body:
+    "Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer Karte.",
+  menu_teaser_cta_label: "Zur Karte",
+  visit_heading: "Besuch uns",
+  feature2_cta_label: "Impressionen ansehen",
 };
 
 // Public read: the live menu + settings for the homepage. No auth — this is

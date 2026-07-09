@@ -55,6 +55,11 @@ const EMPTY_SETTINGS: SiteSettings = {
   atmosphere_body: "",
   atmosphere_image1_url: "",
   atmosphere_image2_url: "",
+  menu_teaser_heading: "",
+  menu_teaser_body: "",
+  menu_teaser_cta_label: "",
+  visit_heading: "",
+  feature2_cta_label: "",
 };
 
 const TABS = [
@@ -533,6 +538,53 @@ function HomepageContentForm({
               />
             </Field>
           </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Karte &amp; Besuch uns</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">
+          Anasayfanın alt kısmındaki "Karte" tanıtım bölümü ve "Besuch uns" başlığı.
+        </p>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <Field label="Karte Başlığı">
+            <input
+              className={inputClass}
+              value={form.menu_teaser_heading}
+              onChange={(e) => setForm({ ...form, menu_teaser_heading: e.target.value })}
+            />
+          </Field>
+          <Field label="Karte Buton Yazısı">
+            <input
+              className={inputClass}
+              value={form.menu_teaser_cta_label}
+              onChange={(e) => setForm({ ...form, menu_teaser_cta_label: e.target.value })}
+            />
+          </Field>
+          <div className="md:col-span-2">
+            <Field label="Karte Metni">
+              <textarea
+                rows={2}
+                className={inputClass}
+                value={form.menu_teaser_body}
+                onChange={(e) => setForm({ ...form, menu_teaser_body: e.target.value })}
+              />
+            </Field>
+          </div>
+          <Field label="Besuch Uns Başlığı">
+            <input
+              className={inputClass}
+              value={form.visit_heading}
+              onChange={(e) => setForm({ ...form, visit_heading: e.target.value })}
+            />
+          </Field>
+          <Field label="Bölüm 2 Buton Yazısı (Impressionen)">
+            <input
+              className={inputClass}
+              value={form.feature2_cta_label}
+              onChange={(e) => setForm({ ...form, feature2_cta_label: e.target.value })}
+            />
+          </Field>
         </div>
       </section>
 

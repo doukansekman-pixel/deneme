@@ -118,6 +118,11 @@ const settingsSchema = z.object({
   atmosphere_body: z.string().max(500),
   atmosphere_image1_url: settingsImageUrlSchema,
   atmosphere_image2_url: settingsImageUrlSchema,
+  menu_teaser_heading: z.string().max(150),
+  menu_teaser_body: z.string().max(500),
+  menu_teaser_cta_label: z.string().max(60),
+  visit_heading: z.string().max(150),
+  feature2_cta_label: z.string().max(60),
 });
 
 export const adminUpdateSettings = createServerFn({ method: "POST" })
@@ -133,6 +138,8 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
        feature1_eyebrow = ?, feature1_heading = ?, feature1_body = ?, feature1_image_url = ?,
        feature2_eyebrow = ?, feature2_heading = ?, feature2_body = ?, feature2_image_url = ?,
        atmosphere_heading = ?, atmosphere_body = ?, atmosphere_image1_url = ?, atmosphere_image2_url = ?,
+       menu_teaser_heading = ?, menu_teaser_body = ?, menu_teaser_cta_label = ?,
+       visit_heading = ?, feature2_cta_label = ?,
        updated_at = datetime('now') WHERE id = 1`,
     )
       .bind(
@@ -160,6 +167,11 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
         data.atmosphere_body,
         data.atmosphere_image1_url,
         data.atmosphere_image2_url,
+        data.menu_teaser_heading,
+        data.menu_teaser_body,
+        data.menu_teaser_cta_label,
+        data.visit_heading,
+        data.feature2_cta_label,
       )
       .run();
     return { ok: true as const };

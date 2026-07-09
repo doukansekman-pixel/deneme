@@ -37,18 +37,19 @@
 @theme {
   --spacing: 0.25rem;
 
-  /* Vype Lounge brand tokens (design-brief.md) - generates bg-vb, text-vb,
+  /* Hype Bar brand tokens (design-brief.md) - generates bg-vb, text-vb,
      border-vb and font-vb utilities. This website never uses q- tokens.
-     Dark espresso-brown background (#211A16, owner-specified as the true
-     Vype tone), warm cream text, and a lighter gold-taupe accent for
-     kickers/prices/hover/focus states so they still read against the
-     dark body. */
-  --color-vb-bg: #211a16;
-  --color-vb-bg-secondary: #2c231d;
-  --color-vb-border: #3d332c;
-  --color-vb-text: #f2ece2;
-  --color-vb-text-secondary: #b0a496;
-  --color-vb-accent: #c9a876;
+     Dark charcoal-green background (#202A24, owner-specified as Hype
+     Bar's real brand tone - deliberately different from Vype Lounge's
+     warm espresso-brown), soft off-white text, and a muted olive-gold
+     accent for kickers/prices/hover/focus states so they still read
+     against the dark body. */
+  --color-vb-bg: #202a24;
+  --color-vb-bg-secondary: #2a362e;
+  --color-vb-border: #3b4a40;
+  --color-vb-text: #edeee8;
+  --color-vb-text-secondary: #a7afa5;
+  --color-vb-accent: #c7b77e;
   /* Fixed light tone for content placed over the dark hero photo, independent
      of the page's normal text tokens. */
   --color-vb-cream: #f5efe4;

@@ -73,23 +73,23 @@ const DEFAULT_SETTINGS: SiteSettings = {
   wifi_password: "",
   datenschutz_text: "",
   logo_url: "",
-  hero_image_url: "/assets/hero-lounge.jpg",
+  hero_image_url: "/assets/hero-lounge.mp4",
   hero_subtitle: "Shisha, Cocktails und die richtige Musik, jeden Tag ab dem Nachmittag.",
   feature1_eyebrow: "Cocktails",
   feature1_heading: "Der passende Begleiter zu jeder Shisha",
   feature1_body:
     "Fruchtige Mocktails, klassische Softdrinks und alles dazwischen, jeden Nachmittag ab Öffnung frisch gemixt.",
-  feature1_image_url: "/assets/menu-item-drinks.jpg",
+  feature1_image_url: "/assets/menu-item-drinks.mp4",
   feature2_eyebrow: "Ambiente",
   feature2_heading: "Entspannte Atmosphäre",
   feature2_body:
     "Sanftes Licht, ruhige Musik und Sitzecken, in denen man gerne länger bleibt. Aus einem kurzen Besuch wird bei uns schnell ein langer Abend.",
-  feature2_image_url: "/assets/gallery-interior-1.jpg",
+  feature2_image_url: "/assets/gallery-interior-1.mp4",
   atmosphere_heading: "Wohlfühl-Lounge in Weiterstadt",
   atmosphere_body:
     "Ob mit Freunden nach der Arbeit oder für einen ruhigen Abend zu zweit, in der Vype Lounge kommt man an und bleibt gerne.",
-  atmosphere_image1_url: "/assets/gallery-shisha-prep.jpg",
-  atmosphere_image2_url: "/assets/gallery-interior-2.jpg",
+  atmosphere_image1_url: "/assets/gallery-shisha-prep.mp4",
+  atmosphere_image2_url: "/assets/gallery-interior-2.mp4",
   menu_teaser_heading: "Karte",
   menu_teaser_body:
     "Shisha, Cocktails, Snacks und mehr. Alle Preise und Beschreibungen findest du auf unserer Karte.",

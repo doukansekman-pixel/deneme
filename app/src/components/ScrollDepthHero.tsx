@@ -3,6 +3,14 @@ import { useEffect, useRef, type PointerEvent } from "react";
 import { MenuCta } from "./MenuCta";
 import { SmokeLayer } from "./SmokeLayer";
 
+// AI-animated depth footage (real photo, subtle camera motion) plays here
+// instead of a static <img> when the admin-set hero image URL points to a
+// video file - same "Görsel URL" field in admin either way.
+const VIDEO_EXTENSIONS = [".mp4", ".webm"];
+function isVideoSrc(src: string): boolean {
+  return VIDEO_EXTENSIONS.some((ext) => src.toLowerCase().endsWith(ext));
+}
+
 // The page's signature motion: as the guest scrolls past the hero, the photo
 // tilts back and sinks into the page (perspective + rotateX + scale), like a
 // card settling into place, instead of a static image or a passive loop.
@@ -82,12 +90,24 @@ export function ScrollDepthHero({
         className="absolute inset-0 origin-bottom motion-reduce:!transform-none"
         style={{ transformStyle: "preserve-3d", willChange: "transform" }}
       >
-        <img
-          src={imageSrc}
-          alt={imageAlt}
-          className="h-full w-full object-cover"
-          fetchPriority="high"
-        />
+        {isVideoSrc(imageSrc) ? (
+          <video
+            src={imageSrc}
+            className="h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-label={imageAlt}
+          />
+        ) : (
+          <img
+            src={imageSrc}
+            alt={imageAlt}
+            className="h-full w-full object-cover"
+            fetchPriority="high"
+          />
+        )}
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-[#1a120c]/55 to-transparent"

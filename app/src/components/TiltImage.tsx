@@ -11,6 +11,15 @@ import { useRef, type PointerEvent } from "react";
 // rather than printed on it), and a soft gloss sheen that tracks the same
 // pointer position across the image (a glassy highlight, reinforcing the
 // tilt as a physical surface catching light).
+// AI-animated depth footage (real photo, subtle camera motion) uses this
+// same component and tilt/glow treatment as a static photo - just swap the
+// element based on the file extension the admin-set URL points to, so the
+// "Görsel URL" field in admin doesn't need a separate video field.
+const VIDEO_EXTENSIONS = [".mp4", ".webm"];
+function isVideoSrc(src: string): boolean {
+  return VIDEO_EXTENSIONS.some((ext) => src.toLowerCase().endsWith(ext));
+}
+
 export function TiltImage({
   src,
   alt,
@@ -58,7 +67,19 @@ export function TiltImage({
         onPointerLeave={onPointerLeave}
         className="relative overflow-hidden rounded-md shadow-[0_18px_40px_-20px_rgba(0,0,0,0.6)] transition-transform duration-200 ease-out will-change-transform"
       >
-        <img src={src} alt={alt} loading={loading} className={className} />
+        {isVideoSrc(src) ? (
+          <video
+            src={src}
+            className={className}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-label={alt}
+          />
+        ) : (
+          <img src={src} alt={alt} loading={loading} className={className} />
+        )}
         <div
           ref={sheenRef}
           aria-hidden

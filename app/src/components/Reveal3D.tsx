@@ -47,6 +47,7 @@ export function Reveal3D({
         style={{
           transform: visible ? "translateY(0) rotateX(0deg) scale(1)" : "translateY(28px) rotateX(8deg) scale(0.98)",
           opacity: visible ? 1 : 0,
+          filter: visible ? "blur(0px)" : "blur(6px)",
           transitionDelay: visible && delay ? `${delay}ms` : "0ms",
         }}
       >

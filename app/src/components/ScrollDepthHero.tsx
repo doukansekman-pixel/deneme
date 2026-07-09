@@ -1,6 +1,7 @@
 import { useEffect, useRef, type PointerEvent } from "react";
 
 import { MenuCta } from "./MenuCta";
+import { SmokeLayer } from "./SmokeLayer";
 
 // The page's signature motion: as the guest scrolls past the hero, the photo
 // tilts back and sinks into the page (perspective + rotateX + scale), like a
@@ -97,6 +98,7 @@ export function ScrollDepthHero({
         />
       </div>
       <div ref={spotlightRef} aria-hidden className="absolute inset-0 transition-[background] duration-300" />
+      <SmokeLayer />
 
       <div className="relative mx-auto w-full max-w-5xl px-6 pb-16 pt-40 motion-safe:animate-[vb-fade-up_0.8s_ease-out]">
         <h1 className="max-w-xl font-vb-display text-4xl font-semibold leading-none tracking-tighter text-vb-cream md:text-6xl">

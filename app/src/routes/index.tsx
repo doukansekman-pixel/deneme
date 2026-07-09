@@ -7,6 +7,7 @@ import { Reveal3D } from "../components/Reveal3D";
 import { MenuCta } from "../components/MenuCta";
 import { SiteFooter } from "../components/SiteFooter";
 import { AmbientGlow } from "../components/AmbientGlow";
+import { SmokeDivider } from "../components/SmokeDivider";
 import { getPublicMenuData } from "../lib/api/public.functions";
 
 export const Route = createFileRoute("/")({
@@ -305,6 +306,7 @@ function Index() {
         subtitle={settings.hero_subtitle}
       />
       <About aboutText={settings.about_text} />
+      <SmokeDivider />
       <FeatureSplit
         imageSrc={settings.feature1_image_url}
         imageAlt={settings.feature1_heading}
@@ -333,6 +335,7 @@ function Index() {
         body={settings.menu_teaser_body}
         ctaLabel={settings.menu_teaser_cta_label}
       />
+      <SmokeDivider />
       <Visit
         heading={settings.visit_heading}
         address={settings.address}

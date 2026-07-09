@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
-    meta: [{ title: "Yönetim Girişi - Hype Bar" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Anmeldung - Hype Bar" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminLogin,
 });
@@ -25,12 +25,12 @@ function AdminLogin() {
         body: JSON.stringify({ password }),
       });
       if (!response.ok) {
-        setError("Şifre hatalı.");
+        setError("Falsches Passwort.");
         return;
       }
       await navigate({ to: "/admin" });
     } catch {
-      setError("Bir hata oluştu, tekrar deneyin.");
+      setError("Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.");
     } finally {
       setSubmitting(false);
     }
@@ -39,10 +39,10 @@ function AdminLogin() {
   return (
     <div className="grid min-h-dvh place-items-center bg-vb-bg px-6 font-vb-display text-vb-text">
       <form onSubmit={handleSubmit} className="w-full max-w-sm">
-        <h1 className="text-2xl font-semibold tracking-tight">Yönetim Girişi</h1>
-        <p className="mt-2 text-sm text-vb-text-secondary">Menüyü düzenlemek için şifreyi girin.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Anmeldung</h1>
+        <p className="mt-2 text-sm text-vb-text-secondary">Passwort eingeben, um die Karte zu bearbeiten.</p>
         <label htmlFor="admin-password" className="mt-8 block text-xs uppercase tracking-[0.15em] text-vb-text-secondary">
-          Şifre
+          Passwort
         </label>
         <input
           id="admin-password"
@@ -63,7 +63,7 @@ function AdminLogin() {
           disabled={submitting}
           className="mt-6 w-full border border-vb-text py-3 text-sm uppercase tracking-[0.15em] text-vb-text transition-colors hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          {submitting ? "Giriş yapılıyor…" : "Giriş Yap"}
+          {submitting ? "Anmelden…" : "Anmelden"}
         </button>
       </form>
     </div>

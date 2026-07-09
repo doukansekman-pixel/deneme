@@ -25,7 +25,7 @@ export const Route = createFileRoute("/admin/")({
   },
   loader: () => adminGetAll(),
   head: () => ({
-    meta: [{ title: "Yönetim - Hype Bar" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [{ title: "Verwaltung - Hype Bar" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdminDashboard,
 });
@@ -63,10 +63,10 @@ const EMPTY_SETTINGS: SiteSettings = {
 };
 
 const TABS = [
-  { id: "settings", label: "Ayarlar" },
-  { id: "homepage", label: "Anasayfa" },
+  { id: "settings", label: "Einstellungen" },
+  { id: "homepage", label: "Startseite" },
   { id: "menu", label: "Menü" },
-  { id: "gallery", label: "Galeri" },
+  { id: "gallery", label: "Galerie" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -75,8 +75,8 @@ function AdminDashboard() {
   const router = useRouter();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>("settings");
-  // Lifted up (not local to each form) so switching between "Ayarlar" and
-  // "Anasayfa" never loses unsaved edits, and both tabs save through the
+  // Lifted up (not local to each form) so switching between "Einstellungen" and
+  // "Startseite" never loses unsaved edits, and both tabs save through the
   // same adminUpdateSettings call - the backend always writes the full row.
   const [settings, setSettings] = useState<SiteSettings>(data.settings ?? EMPTY_SETTINGS);
 
@@ -96,13 +96,13 @@ function AdminDashboard() {
   return (
     <div className="min-h-dvh bg-vb-bg font-vb-display text-vb-text">
       <header className="flex items-center justify-between border-b border-vb-border px-6 py-5">
-        <h1 className="text-lg font-semibold tracking-tight">Hype Bar Yönetim</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Hype Bar Verwaltung</h1>
         <div className="flex items-center gap-6 text-sm">
           <a href="/" target="_blank" rel="noreferrer" className="text-vb-text-secondary hover:text-vb-text">
-            Siteyi Gör
+            Website ansehen
           </a>
           <button onClick={logout} className="text-vb-text-secondary hover:text-vb-accent">
-            Çıkış Yap
+            Abmelden
           </button>
         </div>
       </header>
@@ -228,10 +228,10 @@ function SettingsForm({
 
   return (
     <section>
-      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">İletişim ve Site Ayarları</h2>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Kontakt &amp; Website-Einstellungen</h2>
       <p className="mt-2 text-sm text-vb-text-secondary">
-        Mekan bilgileri, iletişim ve gizlilik metni. Anasayfadaki fotoğraf/başlık bölümleri için
-        "Anasayfa" sekmesine bakın.
+        Standortinformationen, Kontakt und Datenschutztext. Für die Foto- und Überschriftenbereiche der
+        Startseite siehe den Tab "Startseite".
       </p>
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <div className="md:col-span-2">
@@ -239,17 +239,17 @@ function SettingsForm({
             <div className="flex flex-wrap items-center gap-3">
               <img
                 src={form.logo_url || "/assets/logo.png"}
-                alt="Logo önizleme"
+                alt="Logo-Vorschau"
                 className="h-10 w-auto rounded bg-vb-bg-secondary p-1"
               />
               <input
                 className={inputClass}
-                placeholder="Logo URL (boş bırakılırsa varsayılan logo kullanılır)"
+                placeholder="Logo-URL (bei leer wird das Standardlogo verwendet)"
                 value={form.logo_url}
                 onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
               />
               <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-                {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+                {uploading ? "Wird hochgeladen…" : "Von PC/Handy hochladen"}
                 <input
                   type="file"
                   accept="image/*"
@@ -261,7 +261,7 @@ function SettingsForm({
             </div>
           </Field>
         </div>
-        <Field label="Mekan Adı">
+        <Field label="Name des Lokals">
           <input
             className={inputClass}
             value={form.site_name}
@@ -275,7 +275,7 @@ function SettingsForm({
             onChange={(e) => setForm({ ...form, tagline: e.target.value })}
           />
         </Field>
-        <Field label="Instagram Linki">
+        <Field label="Instagram-Link">
           <input
             className={inputClass}
             placeholder="https://instagram.com/..."
@@ -283,28 +283,28 @@ function SettingsForm({
             onChange={(e) => setForm({ ...form, instagram_url: e.target.value })}
           />
         </Field>
-        <Field label="Çalışma Saatleri">
+        <Field label="Öffnungszeiten">
           <input
             className={inputClass}
             value={form.hours}
             onChange={(e) => setForm({ ...form, hours: e.target.value })}
           />
         </Field>
-        <Field label="Adres">
+        <Field label="Adresse">
           <input
             className={inputClass}
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
         </Field>
-        <Field label="WiFi Ağ Adı">
+        <Field label="WLAN-Netzwerkname">
           <input
             className={inputClass}
             value={form.wifi_ssid}
             onChange={(e) => setForm({ ...form, wifi_ssid: e.target.value })}
           />
         </Field>
-        <Field label="WiFi Şifresi">
+        <Field label="WLAN-Passwort">
           <input
             className={inputClass}
             value={form.wifi_password}
@@ -312,7 +312,7 @@ function SettingsForm({
           />
         </Field>
         <div className="md:col-span-2">
-          <Field label="Hakkımızda Metni">
+          <Field label="Über-uns-Text">
             <textarea
               rows={4}
               className={inputClass}
@@ -322,7 +322,7 @@ function SettingsForm({
           </Field>
         </div>
         <div className="md:col-span-2">
-          <Field label="Datenschutz Metni (gizlilik politikası)">
+          <Field label="Datenschutztext (Datenschutzerklärung)">
             <textarea
               rows={10}
               className={`${inputClass} font-mono text-xs`}
@@ -338,10 +338,12 @@ function SettingsForm({
           disabled={status === "saving"}
           className="border border-vb-text px-5 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          {status === "saving" ? "Kaydediliyor…" : "Kaydet"}
+          {status === "saving" ? "Wird gespeichert…" : "Speichern"}
         </button>
-        {status === "saved" ? <span className="text-sm text-vb-text-secondary">Kaydedildi.</span> : null}
-        {status === "error" ? <span className="text-sm text-vb-accent">Kaydedilemedi, tekrar deneyin.</span> : null}
+        {status === "saved" ? <span className="text-sm text-vb-text-secondary">Gespeichert.</span> : null}
+        {status === "error" ? (
+          <span className="text-sm text-vb-accent">Konnte nicht gespeichert werden, bitte erneut versuchen.</span>
+        ) : null}
       </div>
     </section>
   );
@@ -349,8 +351,8 @@ function SettingsForm({
 
 // Homepage editorial content: hero image/subtitle + the two photo-and-claim
 // blocks + the gold atmosphere band. Split into its own tab (rather than
-// folded into "Ayarlar") so the owner isn't scanning one long form mixing
-// contact info with page copy - each tab has one clear job.
+// folded into "Einstellungen") so the owner isn't scanning one long form
+// mixing contact info with page copy - each tab has one clear job.
 function HomepageContentForm({
   settings,
   setSettings,
@@ -406,12 +408,12 @@ function HomepageContentForm({
           {value ? <img src={value} alt="" className="h-12 w-16 rounded object-cover" /> : null}
           <input
             className={inputClass}
-            placeholder="Görsel URL"
+            placeholder="Bild-URL"
             value={value}
             onChange={(e) => setForm({ ...form, [field]: e.target.value })}
           />
           <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-            {uploadingField === field ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+            {uploadingField === field ? "Wird hochgeladen…" : "Von PC/Handy hochladen"}
             <input
               type="file"
               accept="image/*"
@@ -428,14 +430,14 @@ function HomepageContentForm({
   return (
     <div className="space-y-14">
       <section>
-        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Üst Görsel (Hero)</h2>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Titelbild (Hero)</h2>
         <p className="mt-2 text-sm text-vb-text-secondary">
-          Anasayfayı açan büyük fotoğraf ve altındaki kısa açıklama cümlesi. Başlık (büyük yazı) "Ayarlar"
-          sekmesindeki Slogan alanından geliyor.
+          Das große Foto oben auf der Startseite und der kurze Satz darunter. Die große Überschrift
+          (Slogan) kommt aus dem Feld "Slogan" im Tab "Einstellungen".
         </p>
         <div className="mt-6 grid gap-5">
-          <ImageField label="Görsel" field="hero_image_url" />
-          <Field label="Alt Yazı">
+          <ImageField label="Bild" field="hero_image_url" />
+          <Field label="Untertitel">
             <input
               className={inputClass}
               value={form.hero_subtitle}
@@ -446,20 +448,20 @@ function HomepageContentForm({
       </section>
 
       <section>
-        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bölüm 1 (Kokteyller)</h2>
-        <p className="mt-2 text-sm text-vb-text-secondary">Fotoğrafın yanında görünen ilk metin bloğu.</p>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bereich 1 (Cocktails)</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">Der erste Textblock neben dem Foto.</p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <ImageField label="Görsel" field="feature1_image_url" />
+            <ImageField label="Bild" field="feature1_image_url" />
           </div>
-          <Field label="Üst Etiket">
+          <Field label="Kicker">
             <input
               className={inputClass}
               value={form.feature1_eyebrow}
               onChange={(e) => setForm({ ...form, feature1_eyebrow: e.target.value })}
             />
           </Field>
-          <Field label="Başlık">
+          <Field label="Überschrift">
             <input
               className={inputClass}
               value={form.feature1_heading}
@@ -467,7 +469,7 @@ function HomepageContentForm({
             />
           </Field>
           <div className="md:col-span-2">
-            <Field label="Metin">
+            <Field label="Text">
               <textarea
                 rows={3}
                 className={inputClass}
@@ -480,20 +482,20 @@ function HomepageContentForm({
       </section>
 
       <section>
-        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bölüm 2 (Ambiyans)</h2>
-        <p className="mt-2 text-sm text-vb-text-secondary">İkinci fotoğraf + metin bloğu.</p>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Bereich 2 (Ambiente)</h2>
+        <p className="mt-2 text-sm text-vb-text-secondary">Zweiter Foto- und Textblock.</p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <ImageField label="Görsel" field="feature2_image_url" />
+            <ImageField label="Bild" field="feature2_image_url" />
           </div>
-          <Field label="Üst Etiket">
+          <Field label="Kicker">
             <input
               className={inputClass}
               value={form.feature2_eyebrow}
               onChange={(e) => setForm({ ...form, feature2_eyebrow: e.target.value })}
             />
           </Field>
-          <Field label="Başlık">
+          <Field label="Überschrift">
             <input
               className={inputClass}
               value={form.feature2_heading}
@@ -501,7 +503,7 @@ function HomepageContentForm({
             />
           </Field>
           <div className="md:col-span-2">
-            <Field label="Metin">
+            <Field label="Text">
               <textarea
                 rows={3}
                 className={inputClass}
@@ -514,14 +516,14 @@ function HomepageContentForm({
       </section>
 
       <section>
-        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Altın Bant</h2>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Goldenes Band</h2>
         <p className="mt-2 text-sm text-vb-text-secondary">
-          Sayfanın ortasındaki iki fotoğraflı, ortada yazılı bölüm.
+          Der Abschnitt in der Seitenmitte mit zwei Fotos und Text in der Mitte.
         </p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
-          <ImageField label="Sol Görsel" field="atmosphere_image1_url" />
-          <ImageField label="Sağ Görsel" field="atmosphere_image2_url" />
-          <Field label="Başlık">
+          <ImageField label="Linkes Bild" field="atmosphere_image1_url" />
+          <ImageField label="Rechtes Bild" field="atmosphere_image2_url" />
+          <Field label="Überschrift">
             <input
               className={inputClass}
               value={form.atmosphere_heading}
@@ -529,7 +531,7 @@ function HomepageContentForm({
             />
           </Field>
           <div className="md:col-span-2">
-            <Field label="Metin">
+            <Field label="Text">
               <textarea
                 rows={3}
                 className={inputClass}
@@ -544,17 +546,17 @@ function HomepageContentForm({
       <section>
         <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Karte &amp; Besuch uns</h2>
         <p className="mt-2 text-sm text-vb-text-secondary">
-          Anasayfanın alt kısmındaki "Karte" tanıtım bölümü ve "Besuch uns" başlığı.
+          Der "Karte"-Vorstellungsbereich und die "Besuch uns"-Überschrift unten auf der Startseite.
         </p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
-          <Field label="Karte Başlığı">
+          <Field label="Karte-Überschrift">
             <input
               className={inputClass}
               value={form.menu_teaser_heading}
               onChange={(e) => setForm({ ...form, menu_teaser_heading: e.target.value })}
             />
           </Field>
-          <Field label="Karte Buton Yazısı">
+          <Field label="Karte-Buttontext">
             <input
               className={inputClass}
               value={form.menu_teaser_cta_label}
@@ -562,7 +564,7 @@ function HomepageContentForm({
             />
           </Field>
           <div className="md:col-span-2">
-            <Field label="Karte Metni">
+            <Field label="Karte-Text">
               <textarea
                 rows={2}
                 className={inputClass}
@@ -571,14 +573,14 @@ function HomepageContentForm({
               />
             </Field>
           </div>
-          <Field label="Besuch Uns Başlığı">
+          <Field label="Besuch-uns-Überschrift">
             <input
               className={inputClass}
               value={form.visit_heading}
               onChange={(e) => setForm({ ...form, visit_heading: e.target.value })}
             />
           </Field>
-          <Field label="Bölüm 2 Buton Yazısı (Impressionen)">
+          <Field label="Bereich-2-Buttontext (Impressionen)">
             <input
               className={inputClass}
               value={form.feature2_cta_label}
@@ -594,10 +596,12 @@ function HomepageContentForm({
           disabled={status === "saving"}
           className="border border-vb-text px-5 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          {status === "saving" ? "Kaydediliyor…" : "Kaydet"}
+          {status === "saving" ? "Wird gespeichert…" : "Speichern"}
         </button>
-        {status === "saved" ? <span className="text-sm text-vb-text-secondary">Kaydedildi.</span> : null}
-        {status === "error" ? <span className="text-sm text-vb-accent">Kaydedilemedi, tekrar deneyin.</span> : null}
+        {status === "saved" ? <span className="text-sm text-vb-text-secondary">Gespeichert.</span> : null}
+        {status === "error" ? (
+          <span className="text-sm text-vb-accent">Konnte nicht gespeichert werden, bitte erneut versuchen.</span>
+        ) : null}
       </div>
     </div>
   );
@@ -638,8 +642,28 @@ function CategoriesSection({
     }
   }
 
+  // Swaps this category's sort_order with its neighbor so the up/down
+  // buttons reorder categories in place - the public menu already renders
+  // in sort_order ASC, so this is the only change needed to move a
+  // category on the live site.
+  async function moveCategory(index: number, direction: -1 | 1) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= categories.length) return;
+    const current = categories[index];
+    const target = categories[targetIndex];
+    try {
+      await Promise.all([
+        adminUpdateCategory({ data: { id: current.id, name: current.name, sort_order: target.sort_order } }),
+        adminUpdateCategory({ data: { id: target.id, name: target.name, sort_order: current.sort_order } }),
+      ]);
+      onChanged();
+    } catch (error) {
+      await onAuthError(error);
+    }
+  }
+
   async function deleteCategory(category: MenuCategory) {
-    if (!window.confirm(`"${category.name}" kategorisini ve içindeki tüm ürünleri silmek istediğinize emin misiniz?`)) return;
+    if (!window.confirm(`"${category.name}" Kategorie und alle enthaltenen Produkte wirklich löschen?`)) return;
     try {
       await adminDeleteCategory({ data: { id: category.id } });
       onChanged();
@@ -650,10 +674,31 @@ function CategoriesSection({
 
   return (
     <section>
-      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Kategoriler</h2>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Kategorien</h2>
+      <p className="mt-2 text-sm text-vb-text-secondary">
+        Mit den Pfeilen die Reihenfolge ändern - die Karte auf der Website übernimmt diese Reihenfolge.
+      </p>
       <ul className="mt-6 divide-y divide-vb-border">
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <li key={category.id} className="flex items-center gap-3 py-3">
+            <div className="flex shrink-0 flex-col">
+              <button
+                onClick={() => moveCategory(index, -1)}
+                disabled={index === 0}
+                aria-label="Nach oben verschieben"
+                className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
+              >
+                ▲
+              </button>
+              <button
+                onClick={() => moveCategory(index, 1)}
+                disabled={index === categories.length - 1}
+                aria-label="Nach unten verschieben"
+                className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
+              >
+                ▼
+              </button>
+            </div>
             <input
               className={inputClass}
               defaultValue={category.name}
@@ -664,7 +709,7 @@ function CategoriesSection({
               }}
             />
             <button onClick={() => deleteCategory(category)} className="shrink-0 text-sm text-vb-text-secondary hover:text-vb-accent">
-              Sil
+              Löschen
             </button>
           </li>
         ))}
@@ -672,7 +717,7 @@ function CategoriesSection({
       <div className="mt-4 flex gap-3">
         <input
           className={inputClass}
-          placeholder="Yeni kategori adı"
+          placeholder="Neuer Kategoriename"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
@@ -681,7 +726,7 @@ function CategoriesSection({
           disabled={busy}
           className="shrink-0 border border-vb-text px-4 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          Ekle
+          Hinzufügen
         </button>
       </div>
     </section>
@@ -738,7 +783,7 @@ function ItemRow({
   }
 
   async function remove() {
-    if (!window.confirm(`"${item.name}" ürününü silmek istediğinize emin misiniz?`)) return;
+    if (!window.confirm(`"${item.name}" Produkt wirklich löschen?`)) return;
     try {
       await adminDeleteItem({ data: { id: item.id } });
       onChanged();
@@ -763,12 +808,12 @@ function ItemRow({
   return (
     <li className="border-b border-vb-border py-4">
       <div className="grid gap-2 md:grid-cols-[1fr_1fr_100px_auto_auto] md:items-center md:gap-3">
-        <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ad" />
+        <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Name" />
         <input
           className={inputClass}
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="Açıklama"
+          placeholder="Beschreibung"
         />
         <div className="flex items-center gap-1">
           <input
@@ -778,7 +823,7 @@ function ItemRow({
             className={inputClass}
             value={form.price_amount}
             onChange={(e) => setForm({ ...form, price_amount: Number(e.target.value) })}
-            placeholder="Fiyat"
+            placeholder="Preis"
           />
           <span className="shrink-0 text-sm text-vb-text-secondary">€</span>
         </div>
@@ -800,13 +845,13 @@ function ItemRow({
               checked={form.is_available === 1}
               onChange={(e) => setForm({ ...form, is_available: e.target.checked ? 1 : 0 })}
             />
-            Aktif
+            Aktiv
           </label>
           <button onClick={save} disabled={saving} className="text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-            Kaydet
+            Speichern
           </button>
           <button onClick={remove} className="text-xs text-vb-text-secondary hover:text-vb-accent">
-            Sil
+            Löschen
           </button>
         </div>
       </div>
@@ -818,10 +863,10 @@ function ItemRow({
           className={inputClass}
           value={form.image_url}
           onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-          placeholder="Görsel URL (opsiyonel)"
+          placeholder="Bild-URL (optional)"
         />
         <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          {uploading ? "Wird hochgeladen…" : "Von PC/Handy hochladen"}
           <input
             type="file"
             accept="image/*"
@@ -895,15 +940,15 @@ function ItemsSection({
   if (categories.length === 0) {
     return (
       <section>
-        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Ürünler</h2>
-        <p className="mt-4 text-vb-text-secondary">Önce bir kategori ekleyin.</p>
+        <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Produkte</h2>
+        <p className="mt-4 text-vb-text-secondary">Bitte zuerst eine Kategorie hinzufügen.</p>
       </section>
     );
   }
 
   return (
     <section>
-      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Ürünler</h2>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Produkte</h2>
       <ul className="mt-6">
         {items.map((item) => (
           <ItemRow key={item.id} item={item} categories={categories} onAuthError={onAuthError} onChanged={onChanged} />
@@ -912,13 +957,13 @@ function ItemsSection({
       <div className="mt-6 grid gap-2 md:grid-cols-[1fr_1fr_100px_140px_auto] md:items-center md:gap-3">
         <input
           className={inputClass}
-          placeholder="Yeni ürün adı"
+          placeholder="Neuer Produktname"
           value={draft.name}
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}
         />
         <input
           className={inputClass}
-          placeholder="Açıklama"
+          placeholder="Beschreibung"
           value={draft.description}
           onChange={(e) => setDraft({ ...draft, description: e.target.value })}
         />
@@ -928,7 +973,7 @@ function ItemsSection({
             step="0.01"
             min="0"
             className={inputClass}
-            placeholder="Fiyat"
+            placeholder="Preis"
             value={draft.price_amount}
             onChange={(e) => setDraft({ ...draft, price_amount: Number(e.target.value) })}
           />
@@ -947,12 +992,12 @@ function ItemsSection({
         </select>
         <input
           className={inputClass}
-          placeholder="Görsel URL (opsiyonel)"
+          placeholder="Bild-URL (optional)"
           value={draft.image_url}
           onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
         />
         <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          {uploading ? "Wird hochgeladen…" : "Von PC/Handy hochladen"}
           <input
             type="file"
             accept="image/*"
@@ -966,7 +1011,7 @@ function ItemsSection({
           disabled={busy}
           className="shrink-0 border border-vb-text px-4 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          Ekle
+          Hinzufügen
         </button>
       </div>
     </section>
@@ -1016,7 +1061,7 @@ function GallerySection({
   }
 
   async function remove(image: GalleryImage) {
-    if (!window.confirm("Bu görseli silmek istediğinize emin misiniz?")) return;
+    if (!window.confirm("Dieses Bild wirklich löschen?")) return;
     try {
       await adminDeleteGalleryImage({ data: { id: image.id } });
       onChanged();
@@ -1027,7 +1072,7 @@ function GallerySection({
 
   return (
     <section>
-      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Impressionen Galerisi</h2>
+      <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Impressionen-Galerie</h2>
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {images.map((image) => (
           <div key={image.id} className="relative">
@@ -1036,23 +1081,23 @@ function GallerySection({
               onClick={() => remove(image)}
               className="absolute right-1 top-1 bg-vb-bg/90 px-2 py-1 text-xs text-vb-text-secondary hover:text-vb-accent"
             >
-              Sil
+              Löschen
             </button>
           </div>
         ))}
-        {images.length === 0 ? <p className="text-vb-text-secondary">Henüz görsel yok.</p> : null}
+        {images.length === 0 ? <p className="text-vb-text-secondary">Noch keine Bilder.</p> : null}
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <input
           className={inputClass}
-          placeholder="Açıklama (opsiyonel)"
+          placeholder="Beschreibung (optional)"
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
         />
         <input
           className={inputClass}
-          placeholder="Görsel URL"
+          placeholder="Bild-URL"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
@@ -1061,10 +1106,10 @@ function GallerySection({
           disabled={busy}
           className="shrink-0 border border-vb-text px-4 py-2 text-sm uppercase tracking-[0.15em] hover:border-vb-accent hover:text-vb-accent disabled:opacity-50"
         >
-          Ekle
+          Hinzufügen
         </button>
         <label className="shrink-0 cursor-pointer text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:text-vb-text">
-          {uploading ? "Yükleniyor…" : "PC/Telefondan Yükle"}
+          {uploading ? "Wird hochgeladen…" : "Von PC/Handy hochladen"}
           <input
             type="file"
             accept="image/*"

@@ -7,10 +7,10 @@
 // like a smudge on a flat color.
 export function SmokeDivider() {
   return (
-    <div aria-hidden className="pointer-events-none relative h-16 md:h-20">
+    <div aria-hidden className="pointer-events-none relative h-20 md:h-24">
       <div
-        className="absolute inset-x-0 top-1/2 mx-auto h-40 w-[120%] max-w-3xl -translate-y-1/2 rounded-full blur-3xl motion-safe:animate-[vb-smoke-drift_30s_ease-in-out_infinite]"
-        style={{ background: "radial-gradient(ellipse, rgba(201,168,118,0.16), transparent 70%)" }}
+        className="absolute inset-x-0 top-1/2 mx-auto h-48 w-[130%] max-w-3xl -translate-y-1/2 rounded-full blur-2xl motion-safe:animate-[vb-smoke-drift_26s_ease-in-out_infinite]"
+        style={{ background: "radial-gradient(ellipse, rgba(201,168,118,0.35), transparent 68%)" }}
       />
     </div>
   );

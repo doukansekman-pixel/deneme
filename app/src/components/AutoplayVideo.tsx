@@ -13,10 +13,14 @@ export function AutoplayVideo({
   src,
   className,
   ariaLabel,
+  poster,
 }: {
   src: string;
   className?: string;
   ariaLabel: string;
+  // Shown immediately while the video downloads, instead of a blank frame -
+  // matters most for the hero, which is large and above the fold.
+  poster?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -55,6 +59,7 @@ export function AutoplayVideo({
       ref={ref}
       src={src}
       className={className}
+      poster={poster}
       autoPlay
       muted
       loop

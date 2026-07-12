@@ -100,13 +100,11 @@ export function ScrollDepthHero({
             fetchPriority="high"
           />
         )}
+        {/* Scrim kept short and only at the very bottom - just enough for the
+            tagline/CTA text to read, instead of darkening most of the photo. */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-[#1a120c]/55 to-transparent"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(191,176,161,0.25),_transparent_60%)]"
+          className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#1a120c]/85 to-transparent"
         />
       </div>
       <div ref={spotlightRef} aria-hidden className="absolute inset-0 transition-[background] duration-300" />

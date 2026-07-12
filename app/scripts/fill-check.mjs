@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node3
 /**
  * fill-check — fails when a generated/filled site still contains template
  * placeholders or scaffold slop, so an unfinished build can't be shipped.

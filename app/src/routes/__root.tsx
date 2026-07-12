@@ -71,7 +71,7 @@ function buildHead(meta: AppMeta) {
   return {
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" },
       { title },
       { name: "description", content: description },
       { name: "author", content: "Vype Lounge" },

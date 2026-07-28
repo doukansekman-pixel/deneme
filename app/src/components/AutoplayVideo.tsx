@@ -9,6 +9,16 @@ import { useEffect, useRef } from "react";
 // misses. `disablePictureInPicture` and `webkit-playsinline` are the
 // legacy Safari/iOS equivalents of the modern attributes, added for older
 // WebKit builds that only recognize the prefixed/lowercase forms.
+// Safari also refuses to paint any frame at all for a <video> that hasn't
+// started playing yet unless a `poster` is set - Chrome shows the first
+// frame regardless, so this only ever showed up on iOS. Every generated
+// video ships a same-named "-poster.jpg" sibling (see scripts/), so this
+// derives the poster from the src by convention instead of requiring every
+// caller to pass one and risk forgetting it.
+function derivePoster(src: string): string {
+  return src.replace(/\.(mp4|webm)$/i, "-poster.jpg");
+}
+
 export function AutoplayVideo({
   src,
   className,
@@ -19,9 +29,11 @@ export function AutoplayVideo({
   className?: string;
   ariaLabel: string;
   // Shown immediately while the video downloads, instead of a blank frame -
-  // matters most for the hero, which is large and above the fold.
+  // matters most for the hero, which is large and above the fold. Defaults
+  // to the "-poster.jpg" convention if not given explicitly.
   poster?: string;
 }) {
+  const resolvedPoster = poster ?? derivePoster(src);
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -59,7 +71,7 @@ export function AutoplayVideo({
       ref={ref}
       src={src}
       className={className}
-      poster={poster}
+      poster={resolvedPoster}
       autoPlay
       muted
       loop

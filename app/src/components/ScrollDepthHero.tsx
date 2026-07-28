@@ -91,12 +91,7 @@ export function ScrollDepthHero({
         style={{ transformStyle: "preserve-3d", willChange: "transform" }}
       >
         {isVideoSrc(imageSrc) ? (
-          <AutoplayVideo
-            src={imageSrc}
-            className="h-full w-full object-cover"
-            ariaLabel={imageAlt}
-            poster="/assets/hero-lounge-poster.jpg"
-          />
+          <AutoplayVideo src={imageSrc} className="h-full w-full object-cover" ariaLabel={imageAlt} />
         ) : (
           <img
             src={imageSrc}

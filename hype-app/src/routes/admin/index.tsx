@@ -633,9 +633,19 @@ function CategoriesSection({
     }
   }
 
-  async function renameCategory(category: MenuCategory, name: string) {
+  async function updateCategory(
+    category: MenuCategory,
+    changes: Partial<Pick<MenuCategory, "name" | "image_url">>,
+  ) {
     try {
-      await adminUpdateCategory({ data: { id: category.id, name, sort_order: category.sort_order } });
+      await adminUpdateCategory({
+        data: {
+          id: category.id,
+          name: changes.name ?? category.name,
+          sort_order: category.sort_order,
+          image_url: changes.image_url ?? category.image_url,
+        },
+      });
       onChanged();
     } catch (error) {
       await onAuthError(error);
@@ -653,8 +663,12 @@ function CategoriesSection({
     const target = categories[targetIndex];
     try {
       await Promise.all([
-        adminUpdateCategory({ data: { id: current.id, name: current.name, sort_order: target.sort_order } }),
-        adminUpdateCategory({ data: { id: target.id, name: target.name, sort_order: current.sort_order } }),
+        adminUpdateCategory({
+          data: { id: current.id, name: current.name, sort_order: target.sort_order, image_url: current.image_url },
+        }),
+        adminUpdateCategory({
+          data: { id: target.id, name: target.name, sort_order: current.sort_order, image_url: target.image_url },
+        }),
       ]);
       onChanged();
     } catch (error) {
@@ -676,42 +690,21 @@ function CategoriesSection({
     <section>
       <h2 className="text-sm uppercase tracking-[0.15em] text-vb-accent">Kategorien</h2>
       <p className="mt-2 text-sm text-vb-text-secondary">
-        Mit den Pfeilen die Reihenfolge ändern - die Karte auf der Website übernimmt diese Reihenfolge.
+        Mit den Pfeilen die Reihenfolge ändern - die Karte auf der Website übernimmt diese Reihenfolge. Das Bild ist
+        das Kategorie-Cover, das Gäste zuerst sehen.
       </p>
       <ul className="mt-6 divide-y divide-vb-border">
         {categories.map((category, index) => (
-          <li key={category.id} className="flex items-center gap-3 py-3">
-            <div className="flex shrink-0 flex-col">
-              <button
-                onClick={() => moveCategory(index, -1)}
-                disabled={index === 0}
-                aria-label="Nach oben verschieben"
-                className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
-              >
-                ▲
-              </button>
-              <button
-                onClick={() => moveCategory(index, 1)}
-                disabled={index === categories.length - 1}
-                aria-label="Nach unten verschieben"
-                className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
-              >
-                ▼
-              </button>
-            </div>
-            <input
-              className={inputClass}
-              defaultValue={category.name}
-              onBlur={(e) => {
-                if (e.target.value.trim() && e.target.value !== category.name) {
-                  renameCategory(category, e.target.value.trim());
-                }
-              }}
-            />
-            <button onClick={() => deleteCategory(category)} className="shrink-0 text-sm text-vb-text-secondary hover:text-vb-accent">
-              Löschen
-            </button>
-          </li>
+          <CategoryRow
+            key={category.id}
+            category={category}
+            isFirst={index === 0}
+            isLast={index === categories.length - 1}
+            onMove={(direction) => moveCategory(index, direction)}
+            onUpdate={(changes) => updateCategory(category, changes)}
+            onDelete={() => deleteCategory(category)}
+            onAuthError={onAuthError}
+          />
         ))}
       </ul>
       <div className="mt-4 flex gap-3">
@@ -730,6 +723,103 @@ function CategoriesSection({
         </button>
       </div>
     </section>
+  );
+}
+
+function CategoryRow({
+  category,
+  isFirst,
+  isLast,
+  onMove,
+  onUpdate,
+  onDelete,
+  onAuthError,
+}: {
+  category: MenuCategory;
+  isFirst: boolean;
+  isLast: boolean;
+  onMove: (direction: -1 | 1) => Promise<void>;
+  onUpdate: (changes: Partial<Pick<MenuCategory, "name" | "image_url">>) => Promise<void>;
+  onDelete: () => Promise<void>;
+  onAuthError: (error: unknown) => Promise<boolean>;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function onFileSelected(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAdminImage(file);
+      await onUpdate({ image_url: url });
+    } catch (error) {
+      await onAuthError(error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <li className="flex items-center gap-3 py-3">
+      <div className="flex shrink-0 flex-col">
+        <button
+          onClick={() => onMove(-1)}
+          disabled={isFirst}
+          aria-label="Nach oben verschieben"
+          className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
+        >
+          ▲
+        </button>
+        <button
+          onClick={() => onMove(1)}
+          disabled={isLast}
+          aria-label="Nach unten verschieben"
+          className="px-1 leading-none text-vb-text-secondary hover:text-vb-accent disabled:opacity-30"
+        >
+          ▼
+        </button>
+      </div>
+      {category.image_url ? (
+        <img src={category.image_url} alt="" className="h-12 w-12 shrink-0 rounded object-cover" />
+      ) : (
+        <div className="h-12 w-12 shrink-0 rounded bg-vb-bg-secondary" />
+      )}
+      <div className="flex-1 space-y-2">
+        <input
+          className={inputClass}
+          defaultValue={category.name}
+          onBlur={(e) => {
+            if (e.target.value.trim() && e.target.value !== category.name) {
+              onUpdate({ name: e.target.value.trim() });
+            }
+          }}
+        />
+        <div className="flex gap-2">
+          <input
+            className={inputClass}
+            placeholder="Bild-URL"
+            defaultValue={category.image_url}
+            onBlur={(e) => {
+              if (e.target.value.trim() !== category.image_url) {
+                onUpdate({ image_url: e.target.value.trim() });
+              }
+            }}
+          />
+          <label className="flex shrink-0 cursor-pointer items-center border border-vb-border px-3 py-2 text-xs uppercase tracking-[0.1em] text-vb-text-secondary hover:border-vb-accent hover:text-vb-accent">
+            {uploading ? "Wird hochgeladen…" : "Hochladen"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => onFileSelected(e.target.files?.[0])}
+            />
+          </label>
+        </div>
+      </div>
+      <button onClick={onDelete} className="shrink-0 self-start text-sm text-vb-text-secondary hover:text-vb-accent">
+        Löschen
+      </button>
+    </li>
   );
 }
 

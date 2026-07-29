@@ -33,7 +33,7 @@ export const adminGetAll = createServerFn({ method: "GET" }).handler(async () =>
   const [settingsRow, categoriesResult, itemsResult, galleryResult] = await Promise.all([
     DB.prepare("SELECT * FROM site_settings WHERE id = 1").first<SiteSettings>(),
     DB.prepare(
-      "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
+      "SELECT id, name, sort_order, image_url FROM menu_categories ORDER BY sort_order ASC",
     ).all<MenuCategory>(),
     DB.prepare(
       "SELECT id, category_id, name, description, price_amount, image_url, is_available, sort_order FROM menu_items ORDER BY sort_order ASC",
@@ -179,6 +179,14 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
 
 const idSchema = z.object({ id: z.string().min(1).max(64) });
 
+const imageUrlSchema = z
+  .string()
+  .max(500)
+  .refine(
+    (v) => v === "" || v.startsWith("/") || v.startsWith("https://") || v.startsWith("http://"),
+    "invalid_image_url",
+  );
+
 const categoryCreateSchema = z.object({ name: z.string().min(1).max(80) });
 
 export const adminCreateCategory = createServerFn({ method: "POST" })
@@ -202,6 +210,7 @@ const categoryUpdateSchema = z.object({
   id: z.string().min(1).max(64),
   name: z.string().min(1).max(80),
   sort_order: z.number().int(),
+  image_url: imageUrlSchema,
 });
 
 export const adminUpdateCategory = createServerFn({ method: "POST" })
@@ -210,8 +219,8 @@ export const adminUpdateCategory = createServerFn({ method: "POST" })
     await requireAdmin();
     const { DB } = bindings();
     if (!DB) throw new Error("db_unavailable");
-    await DB.prepare("UPDATE menu_categories SET name = ?, sort_order = ? WHERE id = ?")
-      .bind(data.name, data.sort_order, data.id)
+    await DB.prepare("UPDATE menu_categories SET name = ?, sort_order = ?, image_url = ? WHERE id = ?")
+      .bind(data.name, data.sort_order, data.image_url, data.id)
       .run();
     return { ok: true as const };
   });
@@ -226,14 +235,6 @@ export const adminDeleteCategory = createServerFn({ method: "POST" })
     await DB.prepare("DELETE FROM menu_categories WHERE id = ?").bind(data.id).run();
     return { ok: true as const };
   });
-
-const imageUrlSchema = z
-  .string()
-  .max(500)
-  .refine(
-    (v) => v === "" || v.startsWith("/") || v.startsWith("https://") || v.startsWith("http://"),
-    "invalid_image_url",
-  );
 
 const priceAmountSchema = z.number().nonnegative().max(9999);
 

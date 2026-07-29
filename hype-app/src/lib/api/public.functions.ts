@@ -36,7 +36,7 @@ export type SiteSettings = {
   feature2_cta_label: string;
 };
 
-export type MenuCategory = { id: string; name: string; sort_order: number };
+export type MenuCategory = { id: string; name: string; sort_order: number; image_url: string };
 
 export type MenuItemRow = {
   id: string;
@@ -110,7 +110,7 @@ export const getPublicMenuData = createServerFn({ method: "GET" }).handler(
     const [settingsRow, categoriesResult, itemsResult] = await Promise.all([
       DB.prepare("SELECT * FROM site_settings WHERE id = 1").first<SiteSettings>(),
       DB.prepare(
-        "SELECT id, name, sort_order FROM menu_categories ORDER BY sort_order ASC",
+        "SELECT id, name, sort_order, image_url FROM menu_categories ORDER BY sort_order ASC",
       ).all<MenuCategory>(),
       DB.prepare(
         "SELECT id, category_id, name, description, price_amount, image_url, is_available, sort_order FROM menu_items WHERE is_available = 1 ORDER BY sort_order ASC",

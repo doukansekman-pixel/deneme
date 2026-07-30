@@ -34,7 +34,7 @@ const VIVID_FILTER = "saturate(1.2) contrast(1.04)";
 function CategoryGrid({ groups, onOpen }: { groups: CategoryGroup[]; onOpen: (id: string) => void }) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      {groups.map(({ category, items }, index) => (
+      {groups.map(({ category }, index) => (
         <Reveal3D
           key={category.id}
           delay={index * 70}
@@ -58,22 +58,10 @@ function CategoryGrid({ groups, onOpen }: { groups: CategoryGroup[]; onOpen: (id
             <div className="absolute inset-0" style={{ background: CARD_SCRIM }} aria-hidden />
             <div className="absolute inset-0 flex flex-col items-center justify-center px-3 text-center">
               <span
-                className="font-vb-mono text-[0.65rem] uppercase tracking-[0.2em] text-vb-accent"
-                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.65)" }}
-              >
-                Kategorie
-              </span>
-              <span
-                className="mt-1 font-vb-display text-lg font-semibold leading-tight text-vb-cream md:text-2xl"
+                className="font-vb-display text-lg font-semibold leading-tight text-vb-cream md:text-2xl"
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
               >
                 {category.name}
-              </span>
-              <span
-                className="mt-2 font-vb-mono text-[0.65rem] text-vb-text-secondary"
-                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.65)" }}
-              >
-                {items.length} {items.length === 1 ? "Artikel" : "Artikel"}
               </span>
             </div>
           </button>
@@ -181,8 +169,8 @@ function MenuPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-16">
-        <h1 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text md:text-4xl">Karte</h1>
-        <div className="mt-12">
+        <h1 className="sr-only">Karte</h1>
+        <div>
           {groups.length === 0 ? (
             <p className="text-vb-text-secondary">Die Karte ist bald hier verfügbar.</p>
           ) : openGroup ? (

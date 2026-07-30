@@ -1,9 +1,5 @@
-# Plain HTTP for now — no domain yet, so Caddy can't provision a TLS cert.
-# Once a domain is decided: replace ":80" with the domain name (e.g.
-# "vype-lounge.example.com") and Caddy automatically obtains + renews a
-# Let's Encrypt certificate; also drop COOKIE_SECURE=false from
-# docker-compose.yml at that point so the admin session cookie goes back to
-# requiring HTTPS.
+# Plain HTTP/IP fallback access - kept alongside the real domains below so
+# a direct-IP link (or one printed before the domain existed) still works.
 :80 {
 	reverse_proxy app:3000
 }
@@ -11,5 +7,17 @@
 # Hype Bar - second site, same pattern, different host port until it gets
 # its own domain (see docker-compose.yml's app-hype service).
 :8080 {
+	reverse_proxy app-hype:3000
+}
+
+# Real domains - Caddy auto-provisions + renews a Let's Encrypt certificate
+# for each of these the first time it sees a request for them. Once these
+# are confirmed working, drop COOKIE_SECURE=false from docker-compose.yml
+# so the admin session cookie goes back to requiring HTTPS.
+vype.socialai-network.com {
+	reverse_proxy app:3000
+}
+
+hype.socialai-network.com {
 	reverse_proxy app-hype:3000
 }

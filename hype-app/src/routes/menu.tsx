@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import { getPublicMenuData } from "../lib/api/public.functions";
 import type { MenuCategory, MenuItemRow } from "../lib/api/public.functions";
@@ -9,6 +8,15 @@ import { Reveal3D } from "../components/Reveal3D";
 import { SiteFooter } from "../components/SiteFooter";
 
 export const Route = createFileRoute("/menu")({
+  // The open category lives in the URL (?kategorie=...), not just React
+  // state, so opening one is a real history entry. That's what makes the
+  // phone's own back gesture (iOS Safari swipe-back, Android back button)
+  // close the category and return to the grid instead of leaving the site
+  // entirely - a plain useState here would have no history entry to land
+  // on, so the very first back gesture would jump straight past /menu.
+  validateSearch: (search: Record<string, unknown>): { kategorie?: string } => ({
+    kategorie: typeof search.kategorie === "string" ? search.kategorie : undefined,
+  }),
   loader: () => getPublicMenuData(),
   head: () => ({
     meta: [
@@ -141,7 +149,9 @@ function CategoryDetail({
 
 function MenuPage() {
   const { settings, categories, items } = Route.useLoaderData();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const { kategorie } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const openId = kategorie ?? null;
 
   const groups: CategoryGroup[] = categories
     .map((category) => ({
@@ -174,9 +184,13 @@ function MenuPage() {
           {groups.length === 0 ? (
             <p className="text-vb-text-secondary">Die Karte ist bald hier verfügbar.</p>
           ) : openGroup ? (
-            <CategoryDetail category={openGroup.category} items={openGroup.items} onBack={() => setOpenId(null)} />
+            <CategoryDetail
+              category={openGroup.category}
+              items={openGroup.items}
+              onBack={() => navigate({ search: {} })}
+            />
           ) : (
-            <CategoryGrid groups={groups} onOpen={setOpenId} />
+            <CategoryGrid groups={groups} onOpen={(id) => navigate({ search: { kategorie: id } })} />
           )}
         </div>
       </main>

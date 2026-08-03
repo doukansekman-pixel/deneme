@@ -137,6 +137,11 @@ html,
 body {
   background-color: var(--color-vb-bg);
   color: var(--color-vb-text);
+  /* Decorative bleed elements (AmbientGlow's blur orbs, the leaf-drift
+     accents) are deliberately positioned partly off-edge - clip at the
+     page level so they can never open up horizontal scroll/shift on
+     mobile instead of chasing every individual element's bounds. */
+  overflow-x: hidden;
 }
 
 @keyframes vb-fade-up {

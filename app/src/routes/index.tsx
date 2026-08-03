@@ -8,6 +8,7 @@ import { MenuCta } from "../components/MenuCta";
 import { SiteFooter } from "../components/SiteFooter";
 import { AmbientGlow } from "../components/AmbientGlow";
 import { SmokeDivider } from "../components/SmokeDivider";
+import { LeafAccents, LeafShapeDefs } from "../components/LeafAccents";
 import { getPublicMenuData } from "../lib/api/public.functions";
 
 export const Route = createFileRoute("/")({
@@ -85,6 +86,7 @@ function About({ aboutText }: { aboutText: string }) {
   return (
     <section className="relative isolate mx-auto max-w-3xl px-6 py-24">
       <AmbientGlow />
+      <LeafAccents variant="wide" />
       <p className="font-vb-display text-2xl leading-relaxed tracking-tight text-vb-text md:text-3xl">
         {aboutText}
       </p>
@@ -141,7 +143,8 @@ function FeatureSplit({
   );
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-20">
+    <section className="relative mx-auto max-w-5xl px-6 py-16 md:py-20">
+      <LeafAccents variant={imageSide === "left" ? "left" : "right"} />
       <div className="grid gap-10 md:grid-cols-2 md:items-center md:gap-14">
         {photo}
         {copy}
@@ -208,6 +211,7 @@ function MenuTeaser({
   return (
     <section className="relative isolate">
       <AmbientGlow variant="warm" />
+      <LeafAccents variant="wide" />
       <Reveal3D className="mx-auto max-w-3xl px-6 py-24 text-center">
         <h2 className="font-vb-display text-3xl font-semibold tracking-tight text-vb-text">{heading}</h2>
         <p className="mx-auto mt-4 max-w-md text-vb-text-secondary">{body}</p>
@@ -236,6 +240,7 @@ function Visit({
   return (
     <section id="visit" className="relative isolate border-t border-vb-border">
       <AmbientGlow />
+      <LeafAccents variant="visit" />
       <div className="mx-auto grid max-w-5xl gap-10 px-6 py-20 md:grid-cols-2">
         <div>
           <h2 className="font-vb-display text-2xl font-semibold tracking-tight text-vb-text">
@@ -298,6 +303,7 @@ function Index() {
   return (
     <div className="font-vb-display">
       <StructuredData json={schema} />
+      <LeafShapeDefs />
       <Nav siteName={settings.site_name} logoUrl={settings.logo_url} instagramUrl={settings.instagram_url} />
       <ScrollDepthHero
         imageSrc={settings.hero_image_url || "/assets/hero-lounge.jpg"}
